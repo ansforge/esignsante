@@ -70,7 +70,7 @@ La version actuelle de eSignSante est distribuée sous forme d'une image Docker 
 Le déploiement est simplifié, il suffit de copier ces 3 fichiers dans un répertoire et de lancer la commande java pour démarrer esignsante. Aucun autre composant n’est utilisé (pas de serveur d’application).
 
 ## APPEL DE L’API
-L’API est décrite via le fichier OpenAPI suivant :
+L’API est décrite via le fichier OpenAPI suivant :esignsante-ws-api-doc.yaml
 
 La documentation de l’API peut être visualisée en copiant le fichier OpenAPI dans l’éditeur en ligne swagger : https://editor.swagger.io/
 

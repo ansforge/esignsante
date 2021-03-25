@@ -14,7 +14,7 @@ info:
    description: "API du composant eSignSante. <br>Ce composant dit de \"signature\" mutualise et homogénéise la mise en oeuvre\
       \ des besoins autour de la signature. <br>Il permet de signer des documents ainsi que\
       \ de vérifier la validité d'une signature ou d'un certificat.    <br>"
-   version: 2.4
+   version: "2.4"
    title: eSignSante
    contact:
       email: esignsante@asipsante.fr

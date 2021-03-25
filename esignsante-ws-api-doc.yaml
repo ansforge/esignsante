@@ -16,8 +16,6 @@ info:
       \ de vérifier la validité d'une signature ou d'un certificat.    <br>"
    version: "2.4"
    title: eSignSante
-   contact:
-      email: esignsante@asipsante.fr
 tags:
 -  name: client
    description: Ressources offertes au client.

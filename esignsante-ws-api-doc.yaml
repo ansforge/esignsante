@@ -2,14 +2,14 @@ openapi: 3.0.0
 # Added by API Auto Mocking Plugin
 servers:
 -  description: SwaggerHub API Auto Mocking
-   url: https://esignsante.asipsante.fr{basePath}/
+   url: https://localhost{basePath}/
    variables:
       port:
          enum:
          - '8080'
          default: '8080'
       basePath:
-         default: /
+         default: /esignsante/v1
 info:
    description: "API du composant eSignSante. <br>Ce composant dit de \"signature\" mutualise et homogénéise la mise en oeuvre\
       \ des besoins autour de la signature. <br>Il permet de signer des documents ainsi que\

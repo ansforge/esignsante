@@ -8,7 +8,7 @@
       "idProofConf": "1",
       "idSignConf": "1",
       "objectId": "Id_SignedDocument",
-      "privateKey": "-----BEGIN PRIVATE KEY-----[CLE PRIVEE DE SIGNATURE]-----END PRIVATE KEY-----",
+      "privateKey": "-----BEGIN PRIVATE KEY-----[CLE PRIVEE DE SIGNATURE EN PKCS#8]-----END PRIVATE KEY-----",
       "secret": "",
       "signId": "Sig_Id",
       "signValueId": "",
@@ -22,7 +22,7 @@
       "description": "Configuration de Signature de la preuve par défaut",
       "digestAlgorithm": "SHA512",
       "idProofConf": "1",
-      "privateKey": "-----BEGIN PRIVATE KEY-----[CLE PRIVEE DE SIGNATURE DES PREUVES]-----END PRIVATE KEY-----",
+      "privateKey": "-----BEGIN PRIVATE KEY-----[CLE PRIVEE DE SIGNATURE DES PREUVES EN PKCS#8]-----END PRIVATE KEY-----",
       "signaturePackaging": "ENVELOPED"
     }   
   ],

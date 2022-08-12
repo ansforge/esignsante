@@ -2,20 +2,22 @@ openapi: 3.0.0
 # Added by API Auto Mocking Plugin
 servers:
 -  description: SwaggerHub API Auto Mocking
-   url: https://localhost{basePath}/
+   url: https://gateway.api.esante.gouv.fr{basePath}/
    variables:
       port:
          enum:
-         - '8080'
-         default: '8080'
+         - '443'
+         default: '443'
       basePath:
-         default: /esignsante/v1
+         default: /
 info:
    description: "API du composant eSignSante. <br>Ce composant dit de \"signature\" mutualise et homogénéise la mise en oeuvre\
       \ des besoins autour de la signature. <br>Il permet de signer des documents ainsi que\
       \ de vérifier la validité d'une signature ou d'un certificat.    <br>"
-   version: "2.4"
+   version: 2.5.0.13
    title: eSignSante
+   contact:
+      email: esignsante@asipsante.fr
 tags:
 -  name: client
    description: Ressources offertes au client.
@@ -30,6 +32,9 @@ tags:
 -  name: xades
    description: Ressources permettant de signer un document au format Xades Baseline B et/ou de vérifier un flux signé en
       XADES Baseline B avec ou sans preuve.
+-  name: pades
+   description: Ressources permettant de signer un document au format Pades Baseline B et/ou de vérifier un flux signé en
+      PADES Baseline B avec ou sans preuve.
 -  name: certificats
    description: Ressources permettant de vérifier un certificat avec ou sans preuve.
 paths:
@@ -51,7 +56,8 @@ paths:
                         items:
                            type: string
                            example: "/ <br>/configurations <br>/ca <br>/signatures/xmldsig <br>/signatures/xmldsigwithproof <br>/signatures/xadesbaselineb\
-                              \ <br>/signatures/xadesbaselinebwithproof <br>/validation/signatures/xmldsig <br>/validation/signatures/xmldsigwithproof\
+                              \ <br>/signatures/xadesbaselinebwithproof <br>/signatures/padesbaselineb <br>/signatures/padesbaselinebwithproof\
+                              \ <br>/validation/signatures/xmldsig <br>/validation/signatures/xmldsigwithproof\
                               \ <br>/validation/signatures/xadesbaselineb <br>/validation/signatures/xadesbaselinebwithproof <br>\
                               /validation/certificats <br>/validation/certificatswithproof"
             '400':
@@ -385,6 +391,100 @@ paths:
             \ est reconnue;<br>&nbsp;&nbsp;&nbsp;le contenu de la signature est valide;<br><br>  Le client peut également demander l'extraction des\
             \ métadonnées suivantes: <br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br>&nbsp;&nbsp;&nbsp;la date de signature;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique;<br>\
             \ &nbsp;&nbsp;&nbsp;le document original non signé.<br>"
+         requestBody:
+            content:
+               multipart/form-data:
+                  schema:
+                     $ref: '#/components/schemas/SignDocumentWithProof'
+            required: true
+         responses:
+            '200':
+               description: Requête en succès.
+               content:
+                  application/json:
+                     schema:
+                        type: object
+                        $ref: '#/components/schemas/ESignSanteSignatureReportWithProof'
+                        example:
+                           Rapport Signature valide:
+                              erreurs: []
+                              metaData:
+                              -  typeMetadata: DATE_SIGNATURE
+                                 message: 2019-09-09T08:24:33Z
+                              -  typeMetadata: RAPPORT_DIAGNOSTIQUE
+                                 message: cmFwcG9ydCBkaWFnbm9zdGlxdWU=
+                              valide: true
+                              docSigne: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PGRvYz5bLi4uXTxkczpTaWduYXR1cmU+PC9kczpTaWduYXR1cmU+PC9kb2M+
+                              preuve: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PHhuczpBU0lQUHJvb2YgeG1sbnM6ZHM9XCJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjXCIgeG1sbnM6eG5zPVwiaHR0cDovL2VzYW50ZS5nb3V2LmZyL0FTSVAvUHJvb2ZcIiB4bWw6aWQ9XCJBU0lQX1Byb29mXCI+Wy4uLl08L3huczpBU0lQUHJvb2Y+
+                           Rapport Signature invalide:
+                              erreurs:
+                              -  codeErreur: ERSIGN01
+                                 message: Le certificat utilisé pour la signature n'a pas été trouvé dans la signature.
+                              metaData:
+                              -  typeMetadata: DATE_SIGNATURE
+                                 message: 2019-09-09T08:24:33Z
+                              valide: false
+                              docSigne: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PGRvYz5bLi4uXTxkczpTaWduYXR1cmU+PC9kczpTaWduYXR1cmU+PC9kb2M+
+                              preuve: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PHhuczpBU0lQUHJvb2YgeG1sbnM6ZHM9XCJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjXCIgeG1sbnM6eG5zPVwiaHR0cDovL2VzYW50ZS5nb3V2LmZyL0FTSVAvUHJvb2ZcIiB4bWw6aWQ9XCJBU0lQX1Byb29mXCI+Wy4uLl08L3huczpBU0lQUHJvb2Y+
+            '400':
+               description: Requête mal formée.
+            '401':
+               description: Une authentification est nécessaire pour accéder à la ressource (secret incorrect).
+            '404':
+               description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
+            '500':
+               description: Erreur interne du serveur.
+            '501':
+               description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format
+                  XML pour une signature enveloppée par exemple).
+            '503':
+               description: Le service n'est pas disponible.
+   /signatures/padesbaselineb:
+      post:
+         tags:
+         - xades
+         summary: Signature d'un document PDF au format Pades Baseline B.
+         operationId: signaturePades
+         description: |
+            L'opération permet au client de signer un document au format PADES Baseline B.
+         requestBody:
+            content:
+               multipart/form-data:
+                  schema:
+                     $ref: '#/components/schemas/SignDocument'
+            required: true
+         responses:
+            '200':
+               description: Requête en succès.
+               content:
+                  application/json:
+                     schema:
+                        type: object
+                        $ref: '#/components/schemas/ESignSanteSignatureReport'
+                        example:
+                           erreurs: []
+                           docSigne: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PGRvYz5bLi4uXTxkczpTaWduYXR1cmU+PC9kczpTaWduYXR1cmU+PC9kb2M+
+            '400':
+               description: Requête mal formée.
+            '401':
+               description: Une authentification est nécessaire pour accéder à la ressource (secret incorrect).
+            '404':
+               description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
+            '500':
+               description: Erreur interne du serveur.
+            '501':
+               description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format
+                  PDF par exemple).
+            '503':
+               description: Le service n'est pas disponible.
+   /signatures/padesbaselinebwithproof:
+      post:
+         tags:
+         - xades
+         summary: Signature d'un document au format Pades Baseline B avec preuve.
+         operationId: signaturePadesWithProof
+         description: "L'opération permet au client de signer un document au format PADES Baseline B ainsi que de générer une\
+            \ preuve de vérification de signature."
          requestBody:
             content:
                multipart/form-data:
@@ -825,6 +925,11 @@ components:
                description: Document à signer.
                type: string
                format: binary
+            signers:
+               type: array
+               description: Liste des signataires délégataires. 
+               items:
+                  type: string
       SignDocumentWithProof:
          type: object
          required:
@@ -848,6 +953,11 @@ components:
                description: Document à signer.
                type: string
                format: binary
+            signers:
+               type: array
+               description: Liste des signataires délégataires. 
+               items:
+                  type: string
             idVerifSignConf:
                description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour
                   la vérification de signature (appel de l'opération "/configurations").
@@ -865,6 +975,12 @@ components:
                description: Identifiant du demandeur utilisé pour renseigner le champ applicantId de la preuve.
                type: string
                pattern: ^[a-zA-Z_0-9\-]*$
+            openidTokens:
+               description: Liste de tokens openid mappés à leurs endpoints (tokenIntrospectionEndpoint et userInfoEndpoint).
+               type: array
+               items:
+                  type: object
+                  $ref: '#/components/schemas/OpenidToken'
       VerifCertDocument:
          type: object
          required:
@@ -967,6 +1083,12 @@ components:
                   la génération de la preuve (appel de l'opération "/configurations").
                type: integer
                format: int64
+            openidTokens:
+               description: Liste de tokens openid mappés à leurs endpoints (tokenIntrospectionEndpoint et userInfoEndpoint).
+               type: array
+               items:
+                  type: object
+                  $ref: '#/components/schemas/OpenidToken'
       ConfSign:
          type: object
          required:
@@ -1160,6 +1282,19 @@ components:
             id:
                type: string
             description:
+               type: string
+      OpenidToken:
+         type: object
+         required:
+         - tokenValue
+         - tokenIntrospectionEndpoint
+         - userInfoEndpoint
+         properties:
+            tokenValue:
+               type: string
+            tokenIntrospectionEndpoint:
+               type: string
+            userInfoEndpoint:
                type: string
       ESignSanteSignatureReport:
          type: object

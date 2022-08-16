@@ -250,7 +250,7 @@ Options docker:
 
 Options jvm :
 * `-Dspring.config.location` : chemin vers le fichier application.properties *sur le conteneur* (optionnel - ici /var/esignsante/application.properties)
-* `-Dspring.profiles.active` : égale à `swagger` pour activer l'interface (désactivé par défaut)
+* `-Dspring.profiles.active` : égale à `swagger` pour activer l'interface IHM de swagger (désactivé par défaut)
 * Proxy: `-Dhttp.proxyHost=`... `-Dhttps.proxyHost=`...  `-Dhttp.proxyPort=`... `-Dhttps.proxyPort=`... (optionnel)
 
 Arguments java :

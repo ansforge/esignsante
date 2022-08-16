@@ -60,7 +60,7 @@ L'objet configuration de signature contient les éléments suivants :
 - idProofConf : ID de la configuration de la preuve associée à cette configuration de signature.
 - description: description de la configuration
 - certificate : certificat de signature au format pem (base 64), sur une ligne pour respecter le format Json.
-- privateKey : clé privée qui correspond au certificat.
+- privateKey : clé privée au format PKCS#8 (commence avec -----BEGIN PRIVATE KEY----- et fini avec -----END PRIVATE KEY-----) qui correspond au certificat.
 - canonicalisationAlgorithm : algorithme.
 - digestAlgorithm : digest algorithme.
 - signaturePackaging : type de signature, ENVELOPING ou ENVELOPED.
@@ -92,7 +92,7 @@ L'objet configuration de preuve contient les éléments suivants :
 - idProofConf: ID unique de configuration de preuve de validation de signature.
 - description
 - certificate : certificat de signature de preuve au format pem, sur une ligne pour respecter le format Json. 
-- privateKey : clé privée qui correspond au certificat.
+- privateKey : clé privée au format PKCS#8 (commence avec -----BEGIN PRIVATE KEY----- et fini avec -----END PRIVATE KEY-----) qui correspond au certificat.
 - canonicalisationAlgorithm : canonicalisation algorithm.
 - digestAlgorithm : digest algorithm.
 - signaturePackaging : type de signature, ENVELOPING ou ENVELOPED.
@@ -195,6 +195,21 @@ Voici un exemple :
 ```
 Note : pour trouver l'url des CRLs associées à un certificat il suffit de consulter les [points de distribution](https://www.digicert.com/kb/util/utility-test-ocsp-and-crl-access-from-a-server.htm) de la CRL en ouvrant le certificat.
 
+## Commandes utiles de manipulation des fichiers de certificats et de clés privées
+
+### Commandes OpenSSL
+
+Pour extraire la clé privée d’un fichier p12, sans mot de passe et au format PKCS#8, la commande openssl est la suivante :
+```
+openssl pkcs12 -in <votre fichier p12> -nocerts -nodes -out <fichier de sortie>
+```
+
+Pour passer un fichier d'une clée privée, d'un format PKCS#1 vers un format PKCS#8 la commande openssl est la suivante :
+```
+openssl pkey -in <fichier de clé pem en PKCS#1> -out <fichier de clé de sortie pem en PKCS#8>
+```
+
+
 ## Installation de l'Image Docker
 
 ### Installation 
@@ -219,6 +234,7 @@ server.servlet.context-path=/esignsante/v1
 // config.crl.scheduling=[chron job pour rechargement des crl] (optionnel)
 server.tomcat.accesslog.enabled=true
 server.tomcat.accesslog.directory=/var/esignsante/logs
+config.crl.scheduling=0 0 3 * * ?
 ```
 
 Pour démarrer le conteneur il suffit de lancer :

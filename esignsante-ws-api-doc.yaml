@@ -442,7 +442,7 @@ paths:
    /signatures/padesbaselineb:
       post:
          tags:
-         - xades
+         - pades
          summary: Signature d'un document PDF au format Pades Baseline B.
          operationId: signaturePades
          description: |
@@ -480,7 +480,7 @@ paths:
    /signatures/padesbaselinebwithproof:
       post:
          tags:
-         - xades
+         - pades
          summary: Signature d'un document au format Pades Baseline B avec preuve.
          operationId: signaturePadesWithProof
          description: "L'opération permet au client de signer un document au format PADES Baseline B ainsi que de générer une\

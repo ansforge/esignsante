@@ -1,5 +1,4 @@
 openapi: 3.0.0
-# Added by API Auto Mocking Plugin
 servers:
 -  description: SwaggerHub API Auto Mocking
    url: https://gateway.api.esante.gouv.fr{basePath}/
@@ -11,1383 +10,1099 @@ servers:
       basePath:
          default: /
 info:
-   description: "API du composant eSignSante. <br>Ce composant dit de \"signature\" mutualise et homogénéise la mise en oeuvre\
-      \ des besoins autour de la signature. <br>Il permet de signer des documents ainsi que\
-      \ de vérifier la validité d'une signature ou d'un certificat.    <br>"
-   version: 2.5.0.13
-   title: eSignSante
-   contact:
-      email: ans-forge@esante.gouv.fr
+  description: API du composant eSignSante. <br>Ce composant dit de "signature" mutualise et homogénéise la mise en oeuvre des besoins autour de la signature. <br>Il permet de signer des documents ainsi que de vérifier la validité d'une signature ou d'un certificat.    <br>
+  version: 2.5.0.13
+  title: eSignSante
+  contact:
+    email: ans-forge@esante.gouv.fr
 tags:
--  name: client
-   description: Ressources offertes au client.
--  name: ca
-   description: Ressource pour obtenir la liste des autorités de certification utilisées pour signer ou vérifier une signature
-      ou un certificat.
--  name: configurations
-   description: Ressource permettant de lister les différentes configurations disponibles au client.
--  name: xmldsig
-   description: Ressources permettant de signer un document au format XMLDsig et/ou de vérifier un flux signé en XMLDsig avec
-      ou sans preuve.
--  name: xades
-   description: Ressources permettant de signer un document au format Xades Baseline B et/ou de vérifier un flux signé en
-      XADES Baseline B avec ou sans preuve.
--  name: pades
-   description: Ressources permettant de signer un document au format Pades Baseline B et/ou de vérifier un flux signé en
-      PADES Baseline B avec ou sans preuve.
--  name: certificats
-   description: Ressources permettant de vérifier un certificat avec ou sans preuve.
+  - name: client
+    description: Ressources offertes au client.
+  - name: ca
+    description: Ressource pour obtenir la liste des autorités de certification utilisées pour signer ou vérifier une signature ou un certificat.
+  - name: configurations
+    description: Ressource permettant de lister les différentes configurations disponibles au client.
+  - name: xmldsig
+    description: Ressources permettant de signer un document au format XMLDsig et/ou de vérifier un flux signé en XMLDsig avec ou sans preuve.
+  - name: xades
+    description: Ressources permettant de signer un document au format Xades Baseline B et/ou de vérifier un flux signé en XADES Baseline B avec ou sans preuve.
+  - name: pades
+    description: Ressources permettant de signer un document au format Pades Baseline B et/ou de vérifier un flux signé en PADES Baseline B avec ou sans preuve.
+  - name: certificats
+    description: Ressources permettant de vérifier un certificat avec ou sans preuve.
 paths:
-   /:
-      get:
-         summary: Liste des opérations disponibles.
-         operationId: getOperations
-         description: "Opération qui permet au client de lister les opérations offertes par le composant ANS Sign.      \
-            \         <br>"
-         tags:
-         - client
-         responses:
-            '200':
-               description: Requête en succès.
-               content:
-                  application/json:
-                     schema:
-                        type: array
-                        items:
-                           type: string
-                           example: "/ <br>/configurations <br>/ca <br>/signatures/xmldsig <br>/signatures/xmldsigwithproof <br>/signatures/xadesbaselineb\
-                              \ <br>/signatures/xadesbaselinebwithproof <br>/signatures/padesbaselineb <br>/signatures/padesbaselinebwithproof\
-                              \ <br>/validation/signatures/xmldsig <br>/validation/signatures/xmldsigwithproof\
-                              \ <br>/validation/signatures/xadesbaselineb <br>/validation/signatures/xadesbaselinebwithproof <br>\
-                              /validation/certificats <br>/validation/certificatswithproof"
-            '400':
-               description: Requête mal formée.
-            '500':
-               description: Erreur interne du serveur.
-   /secrets:
-      post:
-         tags:
-         - secrets
-         summary: Génération d'un Hash sécurisé à partir du secret
-         operationId: generateSecureSecretHash
-         description: |
-            L'opération permet au client de générer un Hash à partir du secret.
-         requestBody:
-            content:
-               application/json:
-                  schema:
-                     $ref: '#/components/schemas/Secret'
-            required: true
-         responses:
-            '200':
-               description: Hash du secret généré.
-               content:
-                  application/json:
-                     schema:
-                        type: object
-                        $ref: '#/components/schemas/HashedSecret'
-   /configurations:
-      get:
-         summary: Liste des configurations disponibles.
-         operationId: getConfigurations
-         description: "Opération qui permet au client de récupérer les configurations disponibles afin qu'il puisse utiliser\
-            \ la configuration qui correspond à l'usage souhaité.   <br>"
-         tags:
-         - configurations
-         responses:
-            '200':
-               description: Requête en succès.
-               content:
-                  application/json:
-                     schema:
-                        type: object
-                        $ref: '#/components/schemas/Conf'
-                        example:
-                           signature:
-                           -  Confsign:
-                                 idSignConf: 1
-                                 description: Fichier de configuration pour la signature enveloppante de document (type de
-                                    document libre).
-                                 signaturePackaging: ENVELOPING
-                                 digestAlgorithm: SHA256
-                                 canonicalisationAlgorithm: http://www.w3.org/2001/10/xml-exc-c14n#
-                                 dn: CN=testsign.test.asipsante.fr, OU=318751275100020, O=ASIP-SANTE, ST=Paris (75), C=FR # #
-                           -  Confsign:
-                                 idSignConf: 2
-                                 description: Fichier de configuration pour la signature enveloppée d'un document XML.
-                                 signaturePackaging: ENVELOPED
-                                 digestAlgorithm: SHA1
-                                 canonicalisationAlgorithm: http://www.w3.org/TR/2001/REC-xml-c14n-20010315
-                                 dn: CN=asipsign.flux.asipsante.fr, OU=318751275100020, O=ASIP-SANTE, ST=Paris (75),
-                                    C=FR
-                           signatureVerification:
-                           -  ConfVerifSign:
-                                 idVerifSignConf: 1
-                                 description: Configuration pour vérifier les signatures (jeux de règles complet).
-                                 rules:
-                                 -  rule:
-                                       id: SignatureCertificatValide
-                                       description: Vérification de la validité de la signature du certificat.
-                                 -  rule:
-                                       id: ExistenceBaliseSigningTime
-                                       description: La balise "SigningTime" existe dans la signature.
-                                 -  rule:
-                                       id: ExistenceDuCertificatDeSignature
-                                       description: Le certificat utilisé pour la signature existe dans la signature.
-                                 -  rule:
-                                       id: ExpirationCertificat
-                                       description: Le certificat de signature n'est pas expiré.
-                                 -  rule:
-                                       id: NonRepudiation
-                                       description: L'usage de la clé du certificat correspond é un usage de signature électronique
-                                          et de non répudiation.
-                                 -  rule:
-                                       id: RevocationCertificat
-                                       description: Le certificat de signature n'est pas révoqué.
-                                 -  rule:
-                                       id: SignatureNonVide
-                                       description: La signature existe et elle n'est pas vide.
-                                 -  rule:
-                                       id: TrustedCertificat
-# Cette règle est à vérifier (peut-être incluse dans ValidationSignature)
-                                       description: L'Autorité de Certification est reconnue.
-                                 -  rule:
-                                       id: ValidationSignature
-                                       description: Le contenu de la signature est valide.
-#                                -  rule:
-#                                      id: FormatSignature
-#                                      description: Le format de la signature est valide.
-# Cette règle est à vérifier (peut-être incluse dans ValidationSignature)
-                           -  ConfVerifSign:
-                                 idVerifSignConf: 2
-                                 description: Configuration minimaliste pour vérifier les signatures (uniquement la signature
-                                    du certificat de signature).
-                                 rules:
-                                 -  rule:
-                                       id: SignatureCertificatValide
-                                       description: Vérification de la validité de la signature du certificat.
-                                 metaData:
-                                 - DATE_SIGNATURE
-                           certificatVerification:
-                           -  ConfVerifCert:
-                                 idVerifCertConf: 1
-                                 description: Configuration par défaut (toutes les règles activées) pour vérifier les certificats.
-                                 rules:
-                                 -  rule:
-                                       id: SignatureCertificatValide
-                                       description: Vérification de la validité de la signature du certificat.
-                                 -  rule:
-                                       id: ExpirationCertificat
-                                       description: Le certificat n'est pas expiré.
-                                 -  rule:
-                                       id: RevocationCertificat
-                                       description: Le certificat n'est pas révoqué.
-                                 -  rule:
-                                       id: TrustedCertificat
-                                       description: L'Autorité de Certification est reconnue.
-                           -  ConfVerifCert:
-                                 idVerifCertConf: 2
-                                 description: Configuration minimaliste pour vérifier les certificats (uniquement la validité
-                                    de la signature du certificat)
-                                 rules:
-                                 -  rule:
-                                       id: SignatureCertificatValide
-                                       description: Vérification de la validité de la signature du certificat.
-                                 metaData:
-                                 - DN_CERTIFICATE
-                           preuve:
-                           -  ConfProof:
-                                 idProofConf: 1
-                                 description: Configuration pour demander une preuve signée au format SHA1.
-                                 digestAlgorithm: SHA1
-                                 canonicalisationAlgorithm: http://www.w3.org/2001/10/xml-exc-c14n#
-                                 dn: CN=testsign.test.asipsante.fr, OU=318751275100020, O=ASIP-SANTE, ST=Paris (75), C=FR
-                           -  ConfProof:
-                                 idProofConf: 2
-                                 description: Configuration pour demander une preuve signée au format SHA256.
-                                 digestAlgorithm: SHA256 # #
-                                 canonicalisationAlgorithm: http://www.w3.org/TR/2001/REC-xml-c14n-20010315
-                                 dn: CN=testsign.test.asipsante.fr, OU=318751275100020, O=ASIP-SANTE, ST=Paris (75), C=FR
-            '400':
-               description: Requête mal formée.
-            '500':
-               description: Erreur interne du serveur.
-   /ca:
-      get:
-         summary: Liste des Autorités de Certification de confiance utilisées par la plateforme.
-         operationId: getCA
-         description: |
-            Opération qui permet au client de prendre connaissance des Autorités de Certification de confiance utilisées par la plateforme.
-         tags:
-         - ca
-         responses:
-            '200':
-               description: Requête en succès.
-               content:
-                  application/json:
-                     schema:
-                        type: array
-                        items:
-                           type: string
-                        example:
-                        - CN=TEST AC IGC-SANTE ELEMENTAIRE ORGANISATIONS,OU=IGC-SANTE TEST,OU=0002 187512751,O=ASIP-SANTE,C=FR
-                        - CN=TEST AC RACINE IGC-SANTE ELEMENTAIRE,OU=IGC-SANTE TEST,OU=0002 187512751,O=ASIP-SANTE,C=FR
-            '400':
-               description: Requête mal formée
-            '500':
-               description: Erreur interne du serveur.
-   /signatures/xmldsig:
-      post:
-         tags:
-         - xmldsig
-         summary: Signature d'un document au format XMLdsig
-         operationId: signatureXMLdsig
-         description: |
-            L'opération permet au client de signer un document au format XMLDsig-core-1.
-         requestBody:
-            content:
-               multipart/form-data:
-                  schema:
-                     $ref: '#/components/schemas/SignDocument'
-            required: true
-         responses:
-            '200':
-               description: Requête en succès.
-               content:
-                  application/json:
-                     schema:
-                        type: object
-                        $ref: '#/components/schemas/ESignSanteSignatureReport'
-                        example:
-                           erreurs: []
-                           docSigne: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PGRvYz5bLi4uXTxkczpTaWduYXR1cmU+PC9kczpTaWduYXR1cmU+PC9kb2M+
-            '400':
-               description: Requête mal formée.
-            '401':
-               description: Une authentification est nécessaire pour accéder à la ressource (secret incorrect).
-            '404':
-               description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
-            '500':
-               description: Erreur interne du serveur.
-            '501':
-               description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format
-                  XML pour une signature enveloppée par exemple).
-            '503':
-               description: Le service n'est pas disponible.
-   /signatures/xmldsigwithproof:
-      post:
-         tags:
-         - xmldsig
-         summary: Signature d'un document au format XMLdsig avec preuve
-         operationId: signatureXMLdsigWithProof
-         description: "L'opération permet au client de signer un document au format XMLDsig-core-1 ainsi que de générer une\
-            \ preuve de vérification de signature. <br>Le client peut demander la vérification des règles applicables suivantes:<br>\
-            \ &nbsp;&nbsp;&nbsp;validité de la signature du certificat;<br>&nbsp;&nbsp;&nbsp;présence de la balise \"SigningTime\" dans la signature;<br>   \
-            \ &nbsp;&nbsp;&nbsp;présence du certificat utilisé dans la signature; <br>&nbsp;&nbsp;&nbsp;le certificat de signature n'est pas expiré; <br>&nbsp;&nbsp;&nbsp;l'usage\
-            \ de la clé du certificat correspond à un usage de signature électronique et de non répudiation;<br>&nbsp;&nbsp;&nbsp;le certificat\
-            \ de signature n'est pas révoqué; <br>&nbsp;&nbsp;&nbsp;présence d'une signature qui n'est pas vide; <br>&nbsp;&nbsp;&nbsp;l'Autorité de Certification\
-            \ est reconnue;<br>&nbsp;&nbsp;&nbsp;le contenu de la signature est valide;<br><br>  Le client peut également demander l'extraction des\
-            \ métadonnées suivantes: <br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br>&nbsp;&nbsp;&nbsp;la date de signature;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique;<br>  \
-            \ &nbsp;&nbsp;&nbsp;le document original non signé.<br>"
-         requestBody:
-            content:
-               multipart/form-data:
-                  schema:
-                     $ref: '#/components/schemas/SignDocumentWithProof'
-            required: true
-         responses:
-            '200':
-               description: Requête en succès.
-               content:
-                  application/json:
-                     schema:
-                        type: object
-                        $ref: '#/components/schemas/ESignSanteSignatureReportWithProof'
-                        example:
-                           Rapport signature valide:
-                              erreurs: []
-                              metaData:
-                              -  typeMetadata: DN_CERTIFICAT
-                                 message: CN=asipsign.flux.asipsante.fr, OU=318751275100020, O=ASIP-SANTE, ST=Paris
-                                    (75), C=FR
-                              -  typeMetadata: DOCUMENT_ORIGINAL_NON_SIGNE
-                                 message: uY29kaW5nPVwiVVRGLThcIj8+PGRv
-                              valide: true
-                              docSigne: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PGRvYz5bLi4uXTxkczpTaWduYXR1cmU+PC9kczpTaWduYXR1cmU+PC9kb2M+
-                              preuve: PHhuczpBU0lQUHJvb2YgeG1sbnM6ZHM9XCJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjXCIgeG1sbnM6eG5zPVwiaHR0cDovL2VzYW50ZS5nb3V2LmZyL0FTSVAvUHJvb2ZcIiB4bWw6aWQ9XCJBU0lQX1Byb29mXCI
-                           Rapport signature invalide:
-                              erreurs:
-                              -  codeErreur: ERSIGN02
-                                 message: Le certificat n'a pas été émis par l'autorité de certification requise.
-                              -  codeErreur: ERSIGN05
-                                 message: Le certificat est expiré.
-                              metaData: []
-                              valide: false
-                              docSigne: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PGRvYz5bLi4uXTxkczpTaWduYXR1cmU+PC9kczpTaWduYXR1cmU+PC9kb2M+
-                              preuve: PHhuczpBU0lQUHJvb2YgeG1sbnM6ZHM9XCJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjXCIgeG1sbnM6eG5zPVwiaHR0cDovL2VzYW50ZS5nb3V2LmZyL0FTSVAvUHJvb2ZcIiB4bWw6aWQ9XCJBU0lQX1Byb29mXCI
-            '400':
-               description: Requête mal formée.
-            '401':
-               description: Une authentification est nécessaire pour accéder à la ressource (secret incorrect).
-            '404':
-               description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
-            '500':
-               description: Erreur interne du serveur.
-            '501':
-               description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format
-                  XML pour une signature enveloppée par exemple).
-            '503':
-               description: Le service n'est pas disponible.
-   /signatures/xadesbaselineb:
-      post:
-         tags:
-         - xades
-         summary: Signature d'un document au format Xades Baseline B.
-         operationId: signatureXades
-         description: |
-            L'opération permet au client de signer un document au format XADES Baseline B.
-         requestBody:
-            content:
-               multipart/form-data:
-                  schema:
-                     $ref: '#/components/schemas/SignDocument'
-            required: true
-         responses:
-            '200':
-               description: Requête en succès.
-               content:
-                  application/json:
-                     schema:
-                        type: object
-                        $ref: '#/components/schemas/ESignSanteSignatureReport'
-                        example:
-                           erreurs: []
-                           docSigne: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PGRvYz5bLi4uXTxkczpTaWduYXR1cmU+PC9kczpTaWduYXR1cmU+PC9kb2M+
-            '400':
-               description: Requête mal formée.
-            '401':
-               description: Une authentification est nécessaire pour accéder à la ressource (secret incorrect).
-            '404':
-               description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
-            '500':
-               description: Erreur interne du serveur.
-            '501':
-               description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format
-                  XML pour une signature enveloppée par exemple).
-            '503':
-               description: Le service n'est pas disponible.
-   /signatures/xadesbaselinebwithproof:
-      post:
-         tags:
-         - xades
-         summary: Signature d'un document au format Xades Baseline B avec preuve.
-         operationId: signatureXadesWithProof
-         description: "L'opération permet au client de signer un document au format XADES Baseline B ainsi que de générer une\
-            \ preuve de vérification de signature.<br> Le client peut demander la vérification des règles applicables suivantes:<br>\
-            \  &nbsp;&nbsp;&nbsp;validité de la signature du certificat;<br>&nbsp;&nbsp;&nbsp;présence de la balise \"SigningTime\" dans la signature;<br>&nbsp;&nbsp;&nbsp;\
-            \ présence du certificat utilisé dans la signature; <br>&nbsp;&nbsp;&nbsp;le certificat de signature n'est pas expiré; <br>&nbsp;&nbsp;&nbsp;l'usage\
-            \ de la clé du certificat correspond à un usage de signature électronique et de non répudiation;<br>&nbsp;&nbsp;&nbsp;le certificat\
-            \ de signature n'est pas révoqué; <br>&nbsp;&nbsp;&nbsp;présence d'une signature qui n'est pas vide; <br>&nbsp;&nbsp;&nbsp;l'Autorité de Certification\
-            \ est reconnue;<br>&nbsp;&nbsp;&nbsp;le contenu de la signature est valide;<br><br>  Le client peut également demander l'extraction des\
-            \ métadonnées suivantes: <br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br>&nbsp;&nbsp;&nbsp;la date de signature;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique;<br>\
-            \ &nbsp;&nbsp;&nbsp;le document original non signé.<br>"
-         requestBody:
-            content:
-               multipart/form-data:
-                  schema:
-                     $ref: '#/components/schemas/SignDocumentWithProof'
-            required: true
-         responses:
-            '200':
-               description: Requête en succès.
-               content:
-                  application/json:
-                     schema:
-                        type: object
-                        $ref: '#/components/schemas/ESignSanteSignatureReportWithProof'
-                        example:
-                           Rapport Signature valide:
-                              erreurs: []
-                              metaData:
-                              -  typeMetadata: DATE_SIGNATURE
-                                 message: 2019-09-09T08:24:33Z
-                              -  typeMetadata: RAPPORT_DIAGNOSTIQUE
-                                 message: cmFwcG9ydCBkaWFnbm9zdGlxdWU=
-                              valide: true
-                              docSigne: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PGRvYz5bLi4uXTxkczpTaWduYXR1cmU+PC9kczpTaWduYXR1cmU+PC9kb2M+
-                              preuve: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PHhuczpBU0lQUHJvb2YgeG1sbnM6ZHM9XCJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjXCIgeG1sbnM6eG5zPVwiaHR0cDovL2VzYW50ZS5nb3V2LmZyL0FTSVAvUHJvb2ZcIiB4bWw6aWQ9XCJBU0lQX1Byb29mXCI+Wy4uLl08L3huczpBU0lQUHJvb2Y+
-                           Rapport Signature invalide:
-                              erreurs:
-                              -  codeErreur: ERSIGN01
-                                 message: Le certificat utilisé pour la signature n'a pas été trouvé dans la signature.
-                              metaData:
-                              -  typeMetadata: DATE_SIGNATURE
-                                 message: 2019-09-09T08:24:33Z
-                              valide: false
-                              docSigne: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PGRvYz5bLi4uXTxkczpTaWduYXR1cmU+PC9kczpTaWduYXR1cmU+PC9kb2M+
-                              preuve: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PHhuczpBU0lQUHJvb2YgeG1sbnM6ZHM9XCJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjXCIgeG1sbnM6eG5zPVwiaHR0cDovL2VzYW50ZS5nb3V2LmZyL0FTSVAvUHJvb2ZcIiB4bWw6aWQ9XCJBU0lQX1Byb29mXCI+Wy4uLl08L3huczpBU0lQUHJvb2Y+
-            '400':
-               description: Requête mal formée.
-            '401':
-               description: Une authentification est nécessaire pour accéder à la ressource (secret incorrect).
-            '404':
-               description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
-            '500':
-               description: Erreur interne du serveur.
-            '501':
-               description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format
-                  XML pour une signature enveloppée par exemple).
-            '503':
-               description: Le service n'est pas disponible.
-   /signatures/padesbaselineb:
-      post:
-         tags:
-         - pades
-         summary: Signature d'un document PDF au format Pades Baseline B.
-         operationId: signaturePades
-         description: |
-            L'opération permet au client de signer un document au format PADES Baseline B.
-         requestBody:
-            content:
-               multipart/form-data:
-                  schema:
-                     $ref: '#/components/schemas/SignDocument'
-            required: true
-         responses:
-            '200':
-               description: Requête en succès.
-               content:
-                  application/json:
-                     schema:
-                        type: object
-                        $ref: '#/components/schemas/ESignSanteSignatureReport'
-                        example:
-                           erreurs: []
-                           docSigne: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PGRvYz5bLi4uXTxkczpTaWduYXR1cmU+PC9kczpTaWduYXR1cmU+PC9kb2M+
-            '400':
-               description: Requête mal formée.
-            '401':
-               description: Une authentification est nécessaire pour accéder à la ressource (secret incorrect).
-            '404':
-               description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
-            '500':
-               description: Erreur interne du serveur.
-            '501':
-               description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format
-                  PDF par exemple).
-            '503':
-               description: Le service n'est pas disponible.
-   /signatures/padesbaselinebwithproof:
-      post:
-         tags:
-         - pades
-         summary: Signature d'un document au format Pades Baseline B avec preuve.
-         operationId: signaturePadesWithProof
-         description: "L'opération permet au client de signer un document au format PADES Baseline B ainsi que de générer une\
-            \ preuve de vérification de signature."
-         requestBody:
-            content:
-               multipart/form-data:
-                  schema:
-                     $ref: '#/components/schemas/SignDocumentWithProof'
-            required: true
-         responses:
-            '200':
-               description: Requête en succès.
-               content:
-                  application/json:
-                     schema:
-                        type: object
-                        $ref: '#/components/schemas/ESignSanteSignatureReportWithProof'
-                        example:
-                           Rapport Signature valide:
-                              erreurs: []
-                              metaData:
-                              -  typeMetadata: DATE_SIGNATURE
-                                 message: 2019-09-09T08:24:33Z
-                              -  typeMetadata: RAPPORT_DIAGNOSTIQUE
-                                 message: cmFwcG9ydCBkaWFnbm9zdGlxdWU=
-                              valide: true
-                              docSigne: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PGRvYz5bLi4uXTxkczpTaWduYXR1cmU+PC9kczpTaWduYXR1cmU+PC9kb2M+
-                              preuve: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PHhuczpBU0lQUHJvb2YgeG1sbnM6ZHM9XCJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjXCIgeG1sbnM6eG5zPVwiaHR0cDovL2VzYW50ZS5nb3V2LmZyL0FTSVAvUHJvb2ZcIiB4bWw6aWQ9XCJBU0lQX1Byb29mXCI+Wy4uLl08L3huczpBU0lQUHJvb2Y+
-                           Rapport Signature invalide:
-                              erreurs:
-                              -  codeErreur: ERSIGN01
-                                 message: Le certificat utilisé pour la signature n'a pas été trouvé dans la signature.
-                              metaData:
-                              -  typeMetadata: DATE_SIGNATURE
-                                 message: 2019-09-09T08:24:33Z
-                              valide: false
-                              docSigne: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PGRvYz5bLi4uXTxkczpTaWduYXR1cmU+PC9kczpTaWduYXR1cmU+PC9kb2M+
-                              preuve: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PHhuczpBU0lQUHJvb2YgeG1sbnM6ZHM9XCJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjXCIgeG1sbnM6eG5zPVwiaHR0cDovL2VzYW50ZS5nb3V2LmZyL0FTSVAvUHJvb2ZcIiB4bWw6aWQ9XCJBU0lQX1Byb29mXCI+Wy4uLl08L3huczpBU0lQUHJvb2Y+
-            '400':
-               description: Requête mal formée.
-            '401':
-               description: Une authentification est nécessaire pour accéder à la ressource (secret incorrect).
-            '404':
-               description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
-            '500':
-               description: Erreur interne du serveur.
-            '501':
-               description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format
-                  XML pour une signature enveloppée par exemple).
-            '503':
-               description: Le service n'est pas disponible.
-   /validation/signatures/xmldsig:
-      post:
-         tags:
-         - xmldsig
-         summary: Vérification de signature au format XMLdsig.
-         operationId: verifSignatureXMLdsig
-         description: "L'opération permet au client de vérifier une signature au format XMLDsig-core-1. <br>  Le client peut\
-            \ demander la vérification des règles applicables suivantes:<br>&nbsp;&nbsp;&nbsp;validité de la signature du certificat;<br>&nbsp;&nbsp;&nbsp;pré\
-            sence de la balise \"SigningTime\" dans la signature;<br>&nbsp;&nbsp;&nbsp;présence du certificat utilisé dans la signature; <br>\
-            \ &nbsp;&nbsp;&nbsp;le certificat de signature n'est pas expiré; <br>&nbsp;&nbsp;&nbsp;l'usage de la clé du certificat correspond à un usage de\
-            \ signature électronique et de non répudiation;<br>&nbsp;&nbsp;&nbsp;le certificat de signature n'est pas révoqué; <br>&nbsp;&nbsp;&nbsp;présence d'une\
-            \ signature qui n'est pas vide; <br>&nbsp;&nbsp;&nbsp;l'Autorité de Certification est reconnue;<br>&nbsp;&nbsp;&nbsp;le contenu de la signature est\
-            \ valide;<br><br>  Le client peut également demander l'extraction des métadonnées suivantes: <br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br>\
-            \ &nbsp;&nbsp;&nbsp;la date de signature;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique;<br>&nbsp;&nbsp;&nbsp;le document original non signé.<br>"
-         requestBody:
-            content:
-               multipart/form-data:
-                  schema:
-                     $ref: '#/components/schemas/VerifSignDocument'
-            required: true
-         responses:
-            '200':
-               description: Requête en succès.
-               content:
-                  application/json:
-                     schema:
-                        type: object
-                        $ref: '#/components/schemas/ESignSanteValidationReport'
-                        example:
-                           Rapport de Vérification valide:
-                              erreurs: []
-                              metaData:
-                              -  typeMetadata: DN_CERTIFICAT
-                                 message: CN=asipsign.flux.asipsante.fr, OU=318751275100020, O=ASIP-SANTE, ST=Paris
-                                    (75), C=FR
-                              valide: true
-                           Rapport de Vérification invalide:
-                              erreurs:
-                              -  codeErreur: ERSIGN05
-                                 message: Le certificat est expiré.
-                              -  codeErreur: ERSIGN06
-                                 message: Le certificat ne contient pas l'usage requis pour signer.
-                              valide: false
-            '400':
-               description: Requête mal formée.
-            '404':
-               description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
-            '500':
-               description: Erreur interne du serveur (vérifier que le document est au bon format XML).
-            '503':
-               description: Le service n'est pas disponible.
-   /validation/signatures/xmldsigwithproof:
-      post:
-         tags:
-         - xmldsig
-         summary: Vérification de signature au format XMLdsig avec preuve
-         operationId: verifSignatureXMLdsigWithProof
-         description: "L'opération permet au client de vérifier une signature au format XMLDsig-core-1 ainsi que de générer une\
-            \ preuve de vérification. <br>  Le client peut demander la vérification des règles applicables suivantes:<br>&nbsp;&nbsp;&nbsp;validité\
-            \ de la signature du certificat;<br>&nbsp;&nbsp;&nbsp;présence de la balise \"SigningTime\" dans la signature;<br>&nbsp;&nbsp;&nbsp;présence du\
-            \ certificat utilisé dans la signature; <br>&nbsp;&nbsp;&nbsp;le certificat de signature n'est pas expiré; <br>&nbsp;&nbsp;&nbsp;l'usage de la clé\
-            \ du certificat correspond à un usage de signature électronique et de non répudiation;<br>&nbsp;&nbsp;&nbsp;le certificat de signature\
-            \ n'est pas révoqué; <br>&nbsp;&nbsp;&nbsp;présence d'une signature qui n'est pas vide; <br>&nbsp;&nbsp;&nbsp;l'Autorité de Certification est reconnue;<br>\
-            \  &nbsp;&nbsp;&nbsp;le contenu de la signature est valide;<br><br>  Le client peut également demander l'extraction des métadonnées suivantes:\
-            \ <br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br>&nbsp;&nbsp;&nbsp;la date de signature;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique;<br>&nbsp;&nbsp;&nbsp;le document original\
-            \ non signé.<br>"
-         requestBody:
-            content:
-               multipart/form-data:
-                  schema:
-                     $ref: '#/components/schemas/VerifSignDocumentWithProof'
-            required: true
-         responses:
-            '200':
-               description: Requête en succès.
-               content:
-                  application/json:
-                     schema:
-                        type: object
-                        $ref: '#/components/schemas/ESignSanteValidationReportWithProof'
-                        example:
-                           Rapport de Vérification valide:
-                              erreurs: []
-                              valide: true
-                              preuve: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PHhuczpBU0lQUHJvb2YgeG1sbnM6ZHM9XCJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjXCIgeG1sbnM6eG5zPVwiaHR0cDovL2VzYW50ZS5nb3V2LmZyL0FTSVAvUHJvb2ZcIiB4bWw6aWQ9XCJBU0lQX1Byb29mXCI+Wy4uLl08L3huczpBU0lQUHJvb2Y+
-                           Rapport Vérification invalide:
-                              erreurs:
-                              -  codeErreur: ERSIGN10
-                                 message: Le fichier n'est pas signé.
-                              metaData:
-                              -  typeMetadata: DOCUMENT_ORIGINAL_NON_SIGNE
-                                 message: ZG9jdW1lbnQgbm9uIHNpZ27DqQ==
-                              valide: false
-                              preuve: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PHhuczpBU0lQUHJvb2YgeG1sbnM6ZHM9XCJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjXCIgeG1sbnM6eG5zPVwiaHR0cDovL2VzYW50ZS5nb3V2LmZyL0FTSVAvUHJvb2ZcIiB4bWw6aWQ9XCJBU0lQX1Byb29mXCI+Wy4uLl08L3huczpBU0lQUHJvb2Y+
-            '400':
-               description: Requête mal formée.
-            '404':
-               description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
-            '500':
-               description: Erreur interne du serveur (vérifier que le document est au bon format XML).
-            '503':
-               description: Le service n'est pas disponible.
-   /validation/signatures/xadesbaselineb:
-      post:
-         tags:
-         - xades
-         summary: Vérification de signature au format Xades Baseline B.
-         operationId: verifSignatureXades
-         description: "L'opération permet au client de vérifier une signature au format Xades Baseline B. <br>  Le client peut\
-            \ demander la vérification des règles applicables suivantes:<br>&nbsp;&nbsp;&nbsp;validité de la signature du certificat;<br>&nbsp;&nbsp;&nbsp;Pré\
-            sence de la balise \"SigningTime\" dans la signature;<br>&nbsp;&nbsp;&nbsp;présence du certificat utilisé dans la signature; <br>\
-            \  &nbsp;&nbsp;&nbsp;le certificat de signature n'est pas expiré; <br>&nbsp;&nbsp;&nbsp;l'usage de la clé du certificat correspond à un usage de\
-            \ signature électronique et de non répudiation;<br>&nbsp;&nbsp;&nbsp;le certificat de signature n'est pas révoqué; <br>&nbsp;&nbsp;&nbsp;présence d'une\
-            \ signature qui n'est pas vide; <br>&nbsp;&nbsp;&nbsp;l'Autorité de Certification est reconnue;<br>&nbsp;&nbsp;&nbsp;le contenu de la signature est\
-            \ valide;<br><br>  Le client peut également demander l'extraction des métadonnées suivantes: <br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br>\
-            \ &nbsp;&nbsp;&nbsp;la date de signature;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique;<br>&nbsp;&nbsp;&nbsp;le document original non signé.<br>"
-         requestBody:
-            content:
-               multipart/form-data:
-                  schema:
-                     $ref: '#/components/schemas/VerifSignDocument'
-            required: true
-         responses:
-            '200':
-               description: Requête en succès.
-               content:
-                  application/json:
-                     schema:
-                        type: object
-                        $ref: '#/components/schemas/ESignSanteValidationReport'
-                        example:
-                           Rapport de Vérification valide:
-                              erreurs: []
-                              metaData:
-                              -  typeMetadata: DN_CERTIFICAT
-                                 message: CN=asipsign.flux.asipsante.fr, OU=318751275100020, O=ASIP-SANTE, ST=Paris
-                                    (75), C=FR
-                              valide: true
-                           Rapport de Vérification invalide:
-                              erreurs:
-                              -  codeErreur: ERSIGN05
-                                 message: Le certificat est expiré.
-                              -  codeErreur: ERSIGN06
-                                 message: Le certificat ne contient pas l'usage requis pour signer.
-                              valide: false
-            '400':
-               description: Requête mal formée.
-            '404':
-               description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
-            '500':
-               description: Erreur interne du serveur (vérifier que le document est au bon format XML).
-            '503':
-               description: Le service n'est pas disponible.
-   /validation/signatures/xadesbaselinebwithproof:
-      post:
-         tags:
-         - xades
-         summary: Vérification de signature au format Xades Baseline B avec preuve.
-         operationId: verifSignatureXadesWithProof
-         description: "L'opération permet au client de vérifier une signature au format Xades Baseline B ainsi que de générer\
-            \ une preuve de vérification. <br>  Le client peut demander la vérification des règles applicables suivantes:<br> \
-            \ &nbsp;&nbsp;&nbsp;validité de la signature du certificat;<br>&nbsp;&nbsp;&nbsp;présence de la balise \"SigningTime\" dans la signature;<br>&nbsp;&nbsp;&nbsp;pré\
-            sence du certificat utilisé dans la signature; <br>&nbsp;&nbsp;&nbsp;le certificat de signature n'est pas expiré; <br>&nbsp;&nbsp;&nbsp;l'usage de\
-            \ la clé du certificat correspond à un usage de signature électronique et de non répudiation;<br>&nbsp;&nbsp;&nbsp;le certificat\
-            \ de signature n'est pas révoqué; <br>&nbsp;&nbsp;&nbsp;présence d'une signature qui n'est pas vide; <br>&nbsp;&nbsp;&nbsp;l'Autorité de Certification\
-            \ est reconnue;<br>&nbsp;&nbsp;&nbsp;le contenu de la signature est valide;<br><br>  Le client peut également demander l'extraction des\
-            \ métadonnées suivantes: <br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br>&nbsp;&nbsp;&nbsp;la date de signature;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique;<br>  \
-            \ &nbsp;&nbsp;&nbsp;le document original non signé.<br>"
-         requestBody:
-            content:
-               multipart/form-data:
-                  schema:
-                     $ref: '#/components/schemas/VerifSignDocumentWithProof'
-            required: true
-         responses:
-            '200':
-               description: Requête en succès.
-               content:
-                  application/json:
-                     schema:
-                        type: object
-                        $ref: '#/components/schemas/ESignSanteValidationReportWithProof'
-                        example:
-                           Rapport de Vérification valide:
-                              erreurs: []
-                              valide: true
-                              preuve: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PHhuczpBU0lQUHJvb2YgeG1sbnM6ZHM9XCJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjXCIgeG1sbnM6eG5zPVwiaHR0cDovL2VzYW50ZS5nb3V2LmZyL0FTSVAvUHJvb2ZcIiB4bWw6aWQ9XCJBU0lQX1Byb29mXCI+Wy4uLl08L3huczpBU0lQUHJvb2Y+
-                           Rapport de Vérification invalide:
-                              erreurs:
-                              -  codeErreur: ERSIGN01
-                                 message: Le certificat utilisé pour la signature n'a pas été trouvé dans la signature.
-                              -  codeErreur: ERSIGN02
-                                 message: Le certificat n'a pas été émis par l'autorité de certification requise.
-                              metaData:
-                              -  typeMetadata: DN_CERTIFICAT
-                                 message: CN=testsign.test.asipsante.fr, OU=318751275100020, O=ASIP-SANTE, ST=Paris (75),
-                                    C=FR
-                              valide: false
-                              preuve: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PHhuczpBU0lQUHJvb2YgeG1sbnM6ZHM9XCJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjXCIgeG1sbnM6eG5zPVwiaHR0cDovL2VzYW50ZS5nb3V2LmZyL0FTSVAvUHJvb2ZcIiB4bWw6aWQ9XCJBU0lQX1Byb29mXCI+Wy4uLl08L3huczpBU0lQUHJvb2Y+
-            '400':
-               description: Requête mal formée.
-            '404':
-               description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
-            '500':
-               description: Erreur interne du serveur (vérifier que le document est au bon format XML).
-            '501':
-               description: L'opération n'est pas supportée par le serveur (demande de validation d'un document qui n'est
-                  pas au format XML).
-            '503':
-               description: Le service n'est pas disponible.
-   /validation/certificats:
-      post:
-         tags:
-         - certificats
-         summary: Vérification d'un certificat au format DER ou PEM.
-         operationId: verifCertificat
-         description: "L'opération permet au client de vérifier la validité d'un certificat. <br> Le client peut demander la\
-            \ vérification des règles applicables suivantes:<br>&nbsp;&nbsp;&nbsp;le certificat n'est pas expiré;<br>&nbsp;&nbsp;&nbsp;le certificat n'est pas\
-            \ révoqué;<br>&nbsp;&nbsp;&nbsp;la signature du certificat est valide;<br>&nbsp;&nbsp;&nbsp;l'Autorité de Certification est reconnue.<br><br> Le client\
-            \ peut également demander l'extraction des métadonnées suivantes:<br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique.<br>"
-         requestBody:
-            content:
-               multipart/form-data:
-                  schema:
-                     $ref: '#/components/schemas/VerifCertDocument'
-            required: true
-         responses:
-            '200':
-               description: Requête en succès.
-               content:
-                  application/json:
-                     schema:
-                        type: object
-                        $ref: '#/components/schemas/ESignSanteValidationReport'
-                        example:
-                           Rapport de Vérification valide:
-                              erreurs: []
-                              valide: true
-                           Rapport de Vérification invalide:
-                              erreurs:
-                              -  codeErreur: ERCERT01
-                                 message: Le certificat est expiré.
-                              metaData:
-                              -  typeMetadata: DN_CERTIFICAT
-                                 message: CN=testsign.test.asipsante.fr, OU=318751275100020, O=ASIP-SANTE, ST=Paris (75),
-                                    C=FR
-                              valide: false
-            '400':
-               description: Requête mal formée.
-            '404':
-               description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
-            '500':
-               description: Erreur interne du serveur.
-            '501':
-               description: Erreur dans le fichier envoyé (ne correspond pas à un certificat par exemple).
-            '503':
-               description: Le service n'est pas disponible.
-   /validation/certificatswithproof:
-      post:
-         tags:
-         - certificats
-         summary: Vérification de certificat au format DER ou PEM avec preuve.
-         operationId: verifCertificatWithProof
-         description: "L'opération permet au client de vérifier la validité d'un certificat ainsi que de générer une preuve\
-            \ de vérification. <br>  Le client peut demander la vérification des règles applicables suivantes:<br>&nbsp;&nbsp;&nbsp;Le certificat\
-            \ n'est pas expiré;<br>&nbsp;&nbsp;&nbsp;le certificat n'est pas révoqué;<br>&nbsp;&nbsp;&nbsp;la signature du certificat est valide;<br>&nbsp;&nbsp;&nbsp;l'Autorité\
-            \ de Certification est reconnue.<br> Le client peut également demander l'extraction des métadonnées suivantes:<br>\
-            \ &nbsp;&nbsp;&nbsp;le DN du certificat;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique.<br>"
-         requestBody:
-            content:
-               multipart/form-data:
-                  schema:
-                     $ref: '#/components/schemas/VerifCertDocumentWithProof'
-            required: true
-         responses:
-            '200':
-               description: Requête en succès.
-               content:
-                  application/json:
-                     schema:
-                        type: object
-                        $ref: '#/components/schemas/ESignSanteValidationReportWithProof'
-                        example:
-                           Rapport de Vérification valide:
-                              erreurs: []
-                              valide: true
-                              preuve: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PHhuczpBU0lQUHJvb2YgeG1sbnM6ZHM9XCJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjXCIgeG1sbnM6eG5zPVwiaHR0cDovL2VzYW50ZS5nb3V2LmZyL0FTSVAvUHJvb2ZcIiB4bWw6aWQ9XCJBU0lQX1Byb29mXCI+Wy4uLl08L3huczpBU0lQUHJvb2Y+
-                           Rapport de Vérification invalide:
-                              erreurs:
-                              -  codeErreur: ERCERT01
-                                 message: Le certificat est expiré.
-                              metaData:
-                              -  typeMetadata: DN_CERTIFICAT
-                                 message: CN=testsign.test.asipsante.fr, OU=318751275100020, O=ASIP-SANTE, ST=Paris (75),
-                                    C=FR
-                              valide: false
-                              preuve: PD94bWwgdmVyc2lvbj1cIjEuMFwiIGVuY29kaW5nPVwiVVRGLThcIj8+PHhuczpBU0lQUHJvb2YgeG1sbnM6ZHM9XCJodHRwOi8vd3d3LnczLm9yZy8yMDAwLzA5L3htbGRzaWcjXCIgeG1sbnM6eG5zPVwiaHR0cDovL2VzYW50ZS5nb3V2LmZyL0FTSVAvUHJvb2ZcIiB4bWw6aWQ9XCJBU0lQX1Byb29mXCI+Wy4uLl08L3huczpBU0lQUHJvb2Y+
-            '400':
-               description: Requête mal formée.
-            '404':
-               description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
-            '500':
-               description: Erreur interne du serveur.
-            '501':
-               description: Erreur dans le fichier envoyé (ne correspond pas à un certificat par exemple).
-            '503':
-               description: Le service n'est pas disponible.
+  /:
+    get:
+      summary: Liste des opérations disponibles.
+      operationId: getOperations
+      description: Opération qui permet au client de lister les opérations offertes par le composant ANS Sign.               <br>
+      responses:
+        '200':
+          description: Requête en succès.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              examples:
+                example-1:
+                  value:
+                    - string
+        '400':
+          description: Requête mal formée.
+        '500':
+          description: Erreur interne du serveur.
+      tags:
+        - default-api-controller
+        - client
+  /secrets:
+    post:
+      summary: Generation d'un Hash sécurisé à partir du secret
+      operationId: generateSecureSecretHash
+      description: |
+        L'opération permet au client de générer un Hash à partir du secret.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Secret'
+        required: true
+      responses:
+        '200':
+          description: Hash du secret généré.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HashedSecret'
+      tags:
+        - secrets-api-controller
+        - client
+  /configurations:
+    get:
+      summary: Liste des configurations disponibles.
+      operationId: getConfigurations
+      description: Opération qui permet au client de récupérer les configurations disponibles afin qu'il puisse utiliser la configuration qui correspond à l'usage souhaité.   <br>
+      responses:
+        '200':
+          description: Requête en succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conf'
+        '400':
+          description: Requête mal formée.
+        '500':
+          description: Erreur interne du serveur.
+      tags:
+        - configurations-api-controller
+        - configurations
+  /ca:
+    get:
+      summary: Liste des Autorités de Certification de confiance utilisées par la plateforme.
+      operationId: getCA
+      description: |
+        Opération qui permet au client de prendre connaissance des Autorités de Certification de confiance utilisées par la plateforme.
+      responses:
+        '200':
+          description: Requête en succès.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '400':
+          description: Requête mal formée
+        '500':
+          description: Erreur interne du serveur.
+      tags:
+        - ca-api-controller
+        - ca
+  /signatures/xmldsig:
+    post:
+      summary: Signature d'un document au format XMLdsig
+      operationId: signatureXMLdsig
+      description: |
+        L'opération permet au client de signer un document au format XMLDsig-core-1.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SignDocumentDSig'
+        required: true
+      responses:
+        '200':
+          description: Requête en succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ESignSanteSignatureReport'
+        '400':
+          description: Requête mal formée.
+        '401':
+          description: Une authentification est nécessaire pour accéder à la ressource (secret incorrect).
+        '404':
+          description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
+        '500':
+          description: Erreur interne du serveur.
+        '501':
+          description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format XML pour une signature enveloppée par exemple).
+        '503':
+          description: Le service n'est pas disponible.
+      tags:
+        - signatures-api-controller
+        - xmldsig
+  /signatures/xmldsigwithproof:
+    post:
+      summary: Signature d'un document au format XMLdsig avec preuve
+      operationId: signatureXMLdsigWithProof
+      description: 'L''opération permet au client de signer un document au format XMLDsig-core-1 ainsi que de générer une preuve de vérification de signature. <br>Le client peut demander la vérification des règles applicables suivantes:<br> &nbsp;&nbsp;&nbsp;validité de la signature du certificat;<br>&nbsp;&nbsp;&nbsp;présence de la balise "SigningTime" dans la signature;<br>    &nbsp;&nbsp;&nbsp;présence du certificat utilisé dans la signature; <br>&nbsp;&nbsp;&nbsp;le certificat de signature n''est pas expiré; <br>&nbsp;&nbsp;&nbsp;l''usage de la clé du certificat correspond à un usage de signature électronique et de non répudiation;<br>&nbsp;&nbsp;&nbsp;le certificat de signature n''est pas révoqué; <br>&nbsp;&nbsp;&nbsp;présence d''une signature qui n''est pas vide; <br>&nbsp;&nbsp;&nbsp;l''Autorité de Certification est reconnue;<br>&nbsp;&nbsp;&nbsp;le contenu de la signature est valide;<br><br>  Le client peut également demander l''extraction des métadonnées suivantes: <br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br>&nbsp;&nbsp;&nbsp;la date de signature;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique;<br>   &nbsp;&nbsp;&nbsp;le document original non signé.<br>'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SignDocumentDSigWithProof'
+        required: true
+      responses:
+        '200':
+          description: Requête en succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ESignSanteSignatureReportWithProof'
+        '400':
+          description: Requête mal formée.
+        '401':
+          description: Une authentification est nécessaire pour accéder à la ressource (secret incorrect).
+        '404':
+          description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
+        '500':
+          description: Erreur interne du serveur.
+        '501':
+          description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format XML pour une signature enveloppée par exemple).
+        '503':
+          description: Le service n'est pas disponible.
+      tags:
+        - signatures-api-controller
+        - xmldsig
+  /signatures/xadesbaselineb:
+    post:
+      summary: Signature d'un document au format Xades Baseline B.
+      operationId: signatureXades
+      description: |
+        L'opération permet au client de signer un document au format XADES Baseline B.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SignDocument'
+            examples:
+              example-1:
+                value:
+                  secret: string
+                  idSignConf: 0
+                  file: string
+                  signers:
+                    - string
+        required: true
+      responses:
+        '200':
+          description: Requête en succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ESignSanteSignatureReport'
+        '400':
+          description: Requête mal formée.
+        '401':
+          description: Une authentification est nécessaire pour accéder à la ressource (secret incorrect).
+        '404':
+          description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
+        '500':
+          description: Erreur interne du serveur.
+        '501':
+          description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format XML pour une signature enveloppée par exemple).
+        '503':
+          description: Le service n'est pas disponible.
+      tags:
+        - signatures-api-controller
+        - xades
+  /signatures/xadesbaselinebwithproof:
+    post:
+      summary: Signature d'un document au format Xades Baseline B avec preuve.
+      operationId: signatureXadesWithProof
+      description: 'L''opération permet au client de signer un document au format XADES Baseline B ainsi que de générer une preuve de vérification de signature.<br> Le client peut demander la vérification des règles applicables suivantes:<br>  &nbsp;&nbsp;&nbsp;validité de la signature du certificat;<br>&nbsp;&nbsp;&nbsp;présence de la balise "SigningTime" dans la signature;<br>&nbsp;&nbsp;&nbsp; présence du certificat utilisé dans la signature; <br>&nbsp;&nbsp;&nbsp;le certificat de signature n''est pas expiré; <br>&nbsp;&nbsp;&nbsp;l''usage de la clé du certificat correspond à un usage de signature électronique et de non répudiation;<br>&nbsp;&nbsp;&nbsp;le certificat de signature n''est pas révoqué; <br>&nbsp;&nbsp;&nbsp;présence d''une signature qui n''est pas vide; <br>&nbsp;&nbsp;&nbsp;l''Autorité de Certification est reconnue;<br>&nbsp;&nbsp;&nbsp;le contenu de la signature est valide;<br><br>  Le client peut également demander l''extraction des métadonnées suivantes: <br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br>&nbsp;&nbsp;&nbsp;la date de signature;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique;<br> &nbsp;&nbsp;&nbsp;le document original non signé.<br>'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SignDocumentWithProof'
+        required: true
+      responses:
+        '200':
+          description: Requête en succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ESignSanteSignatureReportWithProof'
+        '400':
+          description: Requête mal formée.
+        '401':
+          description: Une authentification est nécessaire pour accéder à la ressource (secret incorrect).
+        '404':
+          description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
+        '500':
+          description: Erreur interne du serveur.
+        '501':
+          description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format XML pour une signature enveloppée par exemple).
+        '503':
+          description: Le service n'est pas disponible.
+      parameters:
+        - $ref: '#/components/parameters/OpenidTokens'
+      tags:
+        - signatures-api-controller
+        - xades
+  /signatures/padesbaselineb:
+    post:
+      summary: Signature d'un document au format Pades Baseline B.
+      operationId: signaturePades
+      description: |
+        L'opération permet au client de signer un document PDF au format PADES Baseline B.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SignDocument'
+        required: true
+      responses:
+        '200':
+          description: Requête en succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ESignSanteSignatureReport'
+        '400':
+          description: Requête mal formée.
+        '401':
+          description: Une authentification est nécessaire pour accéder à la ressource (secret incorrect).
+        '404':
+          description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
+        '500':
+          description: Erreur interne du serveur.
+        '501':
+          description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format XML pour une signature enveloppée par exemple).
+        '503':
+          description: Le service n'est pas disponible.
+      tags:
+        - signatures-api-controller
+        - pades
+  /signatures/padesbaselinebwithproof:
+    post:
+      summary: Signature d'un document PDF au format Pades Baseline B avec preuve.
+      operationId: signaturePadesWithProof
+      description: 'L''opération permet au client de signer un document au format PADES Baseline B ainsi que de générer une preuve de vérification de signature.<br> Le client peut demander la vérification des règles applicables suivantes:<br>  &nbsp;&nbsp;&nbsp;validité de la signature du certificat;<br>&nbsp;&nbsp;&nbsp;présence de la balise "SigningTime" dans la signature;<br>&nbsp;&nbsp;&nbsp; présence du certificat utilisé dans la signature; <br>&nbsp;&nbsp;&nbsp;le certificat de signature n''est pas expiré; <br>&nbsp;&nbsp;&nbsp;l''usage de la clé du certificat correspond à un usage de signature électronique et de non répudiation;<br>&nbsp;&nbsp;&nbsp;le certificat de signature n''est pas révoqué; <br>&nbsp;&nbsp;&nbsp;présence d''une signature qui n''est pas vide; <br>&nbsp;&nbsp;&nbsp;l''Autorité de Certification est reconnue;<br>&nbsp;&nbsp;&nbsp;le contenu de la signature est valide;<br><br>  Le client peut également demander l''extraction des métadonnées suivantes: <br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br>&nbsp;&nbsp;&nbsp;la date de signature;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique;<br> &nbsp;&nbsp;&nbsp;le document original non signé.<br>'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SignDocumentWithProof'
+            examples:
+              example-1:
+                value:
+                  secret: string
+                  idSignConf: 0
+                  file: string
+                  signers:
+                    - string
+                  idVerifSignConf: 0
+                  requestId: string
+                  proofTag: string
+                  applicantId: string
+        required: true
+      responses:
+        '200':
+          description: Requête en succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ESignSanteSignatureReportWithProof'
+        '400':
+          description: Requête mal formée.
+        '401':
+          description: Une authentification est nécessaire pour accéder à la ressource (secret incorrect).
+        '404':
+          description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
+        '500':
+          description: Erreur interne du serveur.
+        '501':
+          description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format XML pour une signature enveloppée par exemple).
+        '503':
+          description: Le service n'est pas disponible.
+      parameters:
+        - $ref: '#/components/parameters/OpenidTokens'
+      tags:
+        - signatures-api-controller
+        - pades
+  /validation/signatures/xmldsig:
+    post:
+      summary: Vérification de signature au format XMLdsig.
+      operationId: verifSignatureXMLdsig
+      description: 'L''opération permet au client de vérifier une signature au format XMLDsig-core-1. <br>  Le client peut demander la vérification des règles applicables suivantes:<br>&nbsp;&nbsp;&nbsp;validité de la signature du certificat;<br>&nbsp;&nbsp;&nbsp;présence de la balise "SigningTime" dans la signature;<br>&nbsp;&nbsp;&nbsp;présence du certificat utilisé dans la signature; <br> &nbsp;&nbsp;&nbsp;le certificat de signature n''est pas expiré; <br>&nbsp;&nbsp;&nbsp;l''usage de la clé du certificat correspond à un usage de signature électronique et de non répudiation;<br>&nbsp;&nbsp;&nbsp;le certificat de signature n''est pas révoqué; <br>&nbsp;&nbsp;&nbsp;présence d''une signature qui n''est pas vide; <br>&nbsp;&nbsp;&nbsp;l''Autorité de Certification est reconnue;<br>&nbsp;&nbsp;&nbsp;le contenu de la signature est valide;<br><br>  Le client peut également demander l''extraction des métadonnées suivantes: <br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br> &nbsp;&nbsp;&nbsp;la date de signature;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique;<br>&nbsp;&nbsp;&nbsp;le document original non signé.<br>'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VerifSignDocument'
+        required: true
+      responses:
+        '200':
+          description: Requête en succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ESignSanteValidationReport'
+        '400':
+          description: Requête mal formée.
+        '404':
+          description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
+        '500':
+          description: Erreur interne du serveur (vérifier que le document est au bon format XML).
+        '501':
+          description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format XML pour une signature enveloppée par exemple).
+        '503':
+          description: Le service n'est pas disponible.
+      tags:
+        - validation-api-controller
+        - xmldsig
+  /validation/signatures/xmldsigwithproof:
+    post:
+      summary: Vérification de signature au format XMLdsig avec preuve
+      operationId: verifSignatureXMLdsigWithProof
+      description: 'L''opération permet au client de vérifier une signature au format XMLDsig-core-1 ainsi que de générer une preuve de vérification. <br>  Le client peut demander la vérification des règles applicables suivantes:<br>&nbsp;&nbsp;&nbsp;validité de la signature du certificat;<br>&nbsp;&nbsp;&nbsp;présence de la balise "SigningTime" dans la signature;<br>&nbsp;&nbsp;&nbsp;présence du certificat utilisé dans la signature; <br>&nbsp;&nbsp;&nbsp;le certificat de signature n''est pas expiré; <br>&nbsp;&nbsp;&nbsp;l''usage de la clé du certificat correspond à un usage de signature électronique et de non répudiation;<br>&nbsp;&nbsp;&nbsp;le certificat de signature n''est pas révoqué; <br>&nbsp;&nbsp;&nbsp;présence d''une signature qui n''est pas vide; <br>&nbsp;&nbsp;&nbsp;l''Autorité de Certification est reconnue;<br>  &nbsp;&nbsp;&nbsp;le contenu de la signature est valide;<br><br>  Le client peut également demander l''extraction des métadonnées suivantes: <br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br>&nbsp;&nbsp;&nbsp;la date de signature;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique;<br>&nbsp;&nbsp;&nbsp;le document original non signé.<br>'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VerifSignDocumentWithProof'
+        required: true
+      responses:
+        '200':
+          description: Requête en succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ESignSanteValidationReportWithProof'
+        '400':
+          description: Requête mal formée.
+        '404':
+          description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
+        '500':
+          description: Erreur interne du serveur.
+        '501':
+          description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format XML pour une signature enveloppée par exemple).
+        '503':
+          description: Le service n'est pas disponible.
+      tags:
+        - validation-api-controller
+        - xmldsig
+  /validation/signatures/xadesbaselineb:
+    post:
+      summary: Vérification de signature au format Xades Baseline B.
+      operationId: verifSignatureXades
+      description: 'L''opération permet au client de vérifier une signature au format Xades Baseline B. <br>  Le client peut demander la vérification des règles applicables suivantes:<br>&nbsp;&nbsp;&nbsp;validité de la signature du certificat;<br>&nbsp;&nbsp;&nbsp;Présence de la balise "SigningTime" dans la signature;<br>&nbsp;&nbsp;&nbsp;présence du certificat utilisé dans la signature; <br>  &nbsp;&nbsp;&nbsp;le certificat de signature n''est pas expiré; <br>&nbsp;&nbsp;&nbsp;l''usage de la clé du certificat correspond à un usage de signature électronique et de non répudiation;<br>&nbsp;&nbsp;&nbsp;le certificat de signature n''est pas révoqué; <br>&nbsp;&nbsp;&nbsp;présence d''une signature qui n''est pas vide; <br>&nbsp;&nbsp;&nbsp;l''Autorité de Certification est reconnue;<br>&nbsp;&nbsp;&nbsp;le contenu de la signature est valide;<br><br>  Le client peut également demander l''extraction des métadonnées suivantes: <br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br> &nbsp;&nbsp;&nbsp;la date de signature;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique;<br>&nbsp;&nbsp;&nbsp;le document original non signé.<br>'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VerifSignDocument'
+        required: true
+      responses:
+        '200':
+          description: Requête en succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ESignSanteValidationReport'
+        '400':
+          description: Requête mal formée.
+        '404':
+          description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
+        '500':
+          description: Erreur interne du serveur.
+        '501':
+          description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format XML pour une signature enveloppée par exemple).
+        '503':
+          description: Le service n'est pas disponible.
+      tags:
+        - validation-api-controller
+        - xades
+  /validation/signatures/xadesbaselinebwithproof:
+    post:
+      summary: Vérification de signature au format Xades Baseline B avec preuve.
+      operationId: verifSignatureXadesWithProof
+      description: 'L''opération permet au client de vérifier une signature au format Xades Baseline B ainsi que de générer une preuve de vérification. <br>  Le client peut demander la vérification des règles applicables suivantes:<br>  &nbsp;&nbsp;&nbsp;validité de la signature du certificat;<br>&nbsp;&nbsp;&nbsp;présence de la balise "SigningTime" dans la signature;<br>&nbsp;&nbsp;&nbsp;présence du certificat utilisé dans la signature; <br>&nbsp;&nbsp;&nbsp;le certificat de signature n''est pas expiré; <br>&nbsp;&nbsp;&nbsp;l''usage de la clé du certificat correspond à un usage de signature électronique et de non répudiation;<br>&nbsp;&nbsp;&nbsp;le certificat de signature n''est pas révoqué; <br>&nbsp;&nbsp;&nbsp;présence d''une signature qui n''est pas vide; <br>&nbsp;&nbsp;&nbsp;l''Autorité de Certification est reconnue;<br>&nbsp;&nbsp;&nbsp;le contenu de la signature est valide;<br><br>  Le client peut également demander l''extraction des métadonnées suivantes: <br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br>&nbsp;&nbsp;&nbsp;la date de signature;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique;<br>   &nbsp;&nbsp;&nbsp;le document original non signé.<br>'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VerifSignDocumentWithProof'
+        required: true
+      responses:
+        '200':
+          description: Requête en succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ESignSanteValidationReportWithProof'
+        '400':
+          description: Requête mal formée.
+        '404':
+          description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
+        '500':
+          description: Erreur interne du serveur.
+        '501':
+          description: L'opération n'est pas supportée par le serveur (demande de validation d'un document qui n'est pas au format XML).
+        '503':
+          description: Le service n'est pas disponible.
+      tags:
+        - validation-api-controller
+        - xades
+  /validation/signatures/padesbaselineb:
+    post:
+      summary: Vérification de signature au format Pades Baseline B.
+      operationId: verifSignaturePades
+      description: 'L''opération permet au client de vérifier une signature au format Pades Baseline B. <br>  Le client peut demander la vérification des règles applicables suivantes:<br>&nbsp;&nbsp;&nbsp;validité de la signature du certificat;<br>&nbsp;&nbsp;&nbsp;Présence de la balise "SigningTime" dans la signature;<br>&nbsp;&nbsp;&nbsp;présence du certificat utilisé dans la signature; <br>  &nbsp;&nbsp;&nbsp;le certificat de signature n''est pas expiré; <br>&nbsp;&nbsp;&nbsp;l''usage de la clé du certificat correspond à un usage de signature électronique et de non répudiation;<br>&nbsp;&nbsp;&nbsp;le certificat de signature n''est pas révoqué; <br>&nbsp;&nbsp;&nbsp;présence d''une signature qui n''est pas vide; <br>&nbsp;&nbsp;&nbsp;l''Autorité de Certification est reconnue;<br>&nbsp;&nbsp;&nbsp;le contenu de la signature est valide;<br><br>  Le client peut également demander l''extraction des métadonnées suivantes: <br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br> &nbsp;&nbsp;&nbsp;la date de signature;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique;<br>&nbsp;&nbsp;&nbsp;le document original non signé.<br>'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VerifSignDocument'
+        required: true
+      responses:
+        '200':
+          description: Requête en succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ESignSanteValidationReport'
+        '400':
+          description: Requête mal formée.
+        '404':
+          description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
+        '500':
+          description: Erreur interne du serveur.
+        '501':
+          description: L'opération n'est pas supportée par le serveur (soumission d'un document qui n'est pas au format PDF par exemple).
+        '503':
+          description: Le service n'est pas disponible.
+      tags:
+        - validation-api-controller
+        - pades
+  /validation/signatures/padesbaselinebwithproof:
+    post:
+      summary: Vérification de signature au format Pades Baseline B avec preuve.
+      operationId: verifSignaturePadesWithProof
+      description: 'L''opération permet au client de vérifier une signature au format Pades Baseline B ainsi que de générer une preuve de vérification. <br>  Le client peut demander la vérification des règles applicables suivantes:<br>  &nbsp;&nbsp;&nbsp;validité de la signature du certificat;<br>&nbsp;&nbsp;&nbsp;présence de la balise "SigningTime" dans la signature;<br>&nbsp;&nbsp;&nbsp;présence du certificat utilisé dans la signature; <br>&nbsp;&nbsp;&nbsp;le certificat de signature n''est pas expiré; <br>&nbsp;&nbsp;&nbsp;l''usage de la clé du certificat correspond à un usage de signature électronique et de non répudiation;<br>&nbsp;&nbsp;&nbsp;le certificat de signature n''est pas révoqué; <br>&nbsp;&nbsp;&nbsp;présence d''une signature qui n''est pas vide; <br>&nbsp;&nbsp;&nbsp;l''Autorité de Certification est reconnue;<br>&nbsp;&nbsp;&nbsp;le contenu de la signature est valide;<br><br>  Le client peut également demander l''extraction des métadonnées suivantes: <br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br>&nbsp;&nbsp;&nbsp;la date de signature;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique;<br>   &nbsp;&nbsp;&nbsp;le document original non signé.<br>'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VerifSignDocumentWithProof'
+        required: true
+      responses:
+        '200':
+          description: Requête en succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ESignSanteValidationReportWithProof'
+        '400':
+          description: Requête mal formée.
+        '404':
+          description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
+        '500':
+          description: Erreur interne du serveur.
+        '501':
+          description: L'opération n'est pas supportée par le serveur (demande de validation d'un document qui n'est pas au format PDF).
+        '503':
+          description: Le service n'est pas disponible.
+      tags:
+        - validation-api-controller
+        - pades
+  /validation/certificats:
+    post:
+      summary: Vérification d'un certificat au format DER ou PEM.
+      operationId: verifCertificat
+      description: 'L''opération permet au client de vérifier la validité d''un certificat. <br> Le client peut demander la vérification des règles applicables suivantes:<br>&nbsp;&nbsp;&nbsp;le certificat n''est pas expiré;<br>&nbsp;&nbsp;&nbsp;le certificat n''est pas révoqué;<br>&nbsp;&nbsp;&nbsp;la signature du certificat est valide;<br>&nbsp;&nbsp;&nbsp;l''Autorité de Certification est reconnue.<br><br> Le client peut également demander l''extraction des métadonnées suivantes:<br>&nbsp;&nbsp;&nbsp;le DN du certificat;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique.<br>'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VerifCertDocument'
+        required: true
+      responses:
+        '200':
+          description: Requête en succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ESignSanteValidationReport'
+        '400':
+          description: Requête mal formée.
+        '404':
+          description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
+        '500':
+          description: Erreur interne du serveur.
+        '501':
+          description: Erreur dans le fichier envoyé (ne correspond pas à un certificat par exemple).
+        '503':
+          description: Le service n'est pas disponible.
+      tags:
+        - validation-api-controller
+        - certificats
+  /validation/certificatswithproof:
+    post:
+      summary: Vérification de certificat au format DER ou PEM avec preuve.
+      operationId: verifCertificatWithProof
+      description: 'L''opération permet au client de vérifier la validité d''un certificat ainsi que de générer une preuve de vérification. <br>  Le client peut demander la vérification des règles applicables suivantes:<br>&nbsp;&nbsp;&nbsp;Le certificat n''est pas expiré;<br>&nbsp;&nbsp;&nbsp;le certificat n''est pas révoqué;<br>&nbsp;&nbsp;&nbsp;la signature du certificat est valide;<br>&nbsp;&nbsp;&nbsp;l''Autorité de Certification est reconnue.<br> Le client peut également demander l''extraction des métadonnées suivantes:<br> &nbsp;&nbsp;&nbsp;le DN du certificat;<br>&nbsp;&nbsp;&nbsp;le rapport du diagnostique.<br>'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VerifCertDocumentWithProof'
+        required: true
+      responses:
+        '200':
+          description: Requête en succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ESignSanteValidationReportWithProof'
+        '400':
+          description: Requête mal formée.
+        '404':
+          description: Ressource introuvable (identifiant de configuration qui n'existe pas par exemple).
+        '500':
+          description: Erreur interne du serveur.
+        '501':
+          description: Erreur dans le fichier envoyé (ne correspond pas à un certificat par exemple).
+        '503':
+          description: Le service n'est pas disponible.
+      tags:
+        - validation-api-controller
+        - certificats
 components:
-   schemas:
-      Secret:
-         type: object
-         required:
-         - plainSecret
-         properties:
-            plainSecret:
-               description: Le secret.
-               type: string
-      HashedSecret:
-         type: object
-         required:
-         - secureSecretHash
-         properties:
-            secureSecretHash:
-               description: Le Hash du secret.
-               type: string
-      Conf:
-         description: Listes des différentes configurations
-         properties:
-            signature:
-               type: array
-               items:
-                  type: object
-                  $ref: '#/components/schemas/ConfSign'
-            signatureVerification:
-               type: array
-               items:
-                  type: object
-                  $ref: '#/components/schemas/ConfVerifSign'
-            certificatVerification:
-               type: array
-               items:
-                  type: object
-                  $ref: '#/components/schemas/ConfVerifCert'
-            proof:
-               type: array
-               items:
-                  type: object
-                  $ref: '#/components/schemas/ConfProof'
-      Proof:
-         type: object
-         required:
-         - requestId
-         - proofTag
-         - idProofConf
-         - applicantId
-         properties:
-            requestId:
-               description: Identifiant de la demande pour renseigner l'élément RequestId de la preuve.
-               type: string
-               pattern: ^[a-zA-Z_0-9\-]*$
-            proofTag:
-               description: Tag utilisé pour renseigner l'élément Tag de la preuve.
-               type: string
-               pattern: ^[a-zA-Z_0-9\-]*$
-            idProofConf:
-               description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour
-                  la génération de la preuve (appel de l'opération "/configurations").
-               type: integer
-               format: int64
-            applicantId:
-               description: Identifiant du demandeur utilisé pour renseigner le champ applicantId de la preuve.
-               type: string
-               pattern: ^[a-zA-Z_0-9\-]*$
-      SignDocument:
-         type: object
-         required:
-         - idSignConf
-         - file
-         properties:
-            secret:
-               description: Secret
-               type: string
-               pattern: ^[a-zA-Z_0-9\-]*$
-            idSignConf:
-               description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour
-                  la signature (appel de l'opération "/configurations").
-               type: integer
-               format: int64
-            file:
-               description: Document à signer.
-               type: string
-               format: binary
-            signers:
-               type: array
-               description: Liste des signataires délégataires. 
-               items:
-                  type: string
-      SignDocumentWithProof:
-         type: object
-         required:
-         - idSignConf
-         - file
-         - idVerifSignConf
-         - requestId
-         - proofTag
-         - applicantId
-         properties:
-            secret:
-               description: Secret
-               type: string
-               pattern: ^[a-zA-Z_0-9\-]*$
-            idSignConf:
-               description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour
-                  la signature (appel de l'opération "/configurations").
-               type: integer
-               format: int64
-            file:
-               description: Document à signer.
-               type: string
-               format: binary
-            signers:
-               type: array
-               description: Liste des signataires délégataires. 
-               items:
-                  type: string
-            idVerifSignConf:
-               description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour
-                  la vérification de signature (appel de l'opération "/configurations").
-               type: integer
-               format: int64
-            requestId:
-               description: Identifiant de la demande pour renseigner l'élément RequestId de la preuve.
-               type: string
-               pattern: ^[a-zA-Z_0-9\-]*$
-            proofTag:
-               description: Tag utilisé pour renseigner l'élément Tag de la preuve.
-               type: string
-               pattern: ^[a-zA-Z_0-9\-]*$
-            applicantId:
-               description: Identifiant du demandeur utilisé pour renseigner le champ applicantId de la preuve.
-               type: string
-               pattern: ^[a-zA-Z_0-9\-]*$
-            openidTokens:
-               description: Liste de tokens openid mappés à leurs endpoints (tokenIntrospectionEndpoint et userInfoEndpoint).
-               type: array
-               items:
-                  type: object
-                  $ref: '#/components/schemas/OpenidToken'
-      VerifCertDocument:
-         type: object
-         required:
-         - idVerifCertConf
-         - file
-         properties:
-            idVerifCertConf:
-               description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour
-                  la vérification de certificat (appel de l'opération "/configurations").
-               type: integer
-               format: int64
-            file:
-               description: Certificat à vérifier.
-               type: string
-               format: binary
-      VerifCertDocumentWithProof:
-         type: object
-         required:
-         - idVerifCertConf
-         - file
-         - requestId
-         - proofTag
-         - applicantId
-         - idProofConf
-         properties:
-            idVerifCertConf:
-               description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour
-                  la vérification de certificat (appel de l'opération "/configurations").
-               type: integer
-               format: int64
-            file:
-               description: Certificat à vérifier.
-               type: string
-               format: binary
-            requestId:
-               description: Identifiant de la demande pour renseigner l'élément RequestId de la preuve.
-               type: string
-               pattern: ^[a-zA-Z_0-9\-]*$
-            proofTag:
-               description: Tag utilisé pour renseigner l'élément Tag de la preuve.
-               type: string
-               pattern: ^[a-zA-Z_0-9\-]*$
-            applicantId:
-               description: Identifiant du demandeur utilisé pour renseigner le champ applicantId de la preuve.
-               type: string
-               pattern: ^[a-zA-Z_0-9\-]*$
-            idProofConf:
-               description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour
-                  la génération de la preuve (appel de l'opération "/configurations").
-               type: integer
-               format: int64
-      VerifSignDocument:
-         type: object
-         required:
-         - idVerifSignConf
-         - file
-         properties:
-            idVerifSignConf:
-               description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour
-                  la vérification de signature (appel de l'opération "/configurations").
-               type: integer
-               format: int64
-            file:
-               description: Document à vérifier.
-               type: string
-               format: binary
-      VerifSignDocumentWithProof:
-         type: object
-         required:
-         - idVerifSignConf
-         - file
-         - requestId
-         - proofTag
-         - applicantId
-         - idProofConf
-         properties:
-            idVerifSignConf:
-               description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour
-                  la vérification de signature (appel de l'opération "/configurations").
-               type: integer
-               format: int64
-            file:
-               description: Document à vérifier.
-               type: string
-               format: binary
-            requestId:
-               description: Identifiant de la demande pour renseigner l'élément RequestId de la preuve.
-               type: string
-               pattern: ^[a-zA-Z_0-9\-]*$
-            proofTag:
-               description: Tag utilisé pour renseigner l'élément Tag de la preuve.
-               type: string
-               pattern: ^[a-zA-Z_0-9\-]*$
-            applicantId:
-               description: Identifiant du demandeur utilisé pour renseigner le champ applicantId de la preuve.
-               type: string
-               pattern: ^[a-zA-Z_0-9\-]*$
-            idProofConf:
-               description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour
-                  la génération de la preuve (appel de l'opération "/configurations").
-               type: integer
-               format: int64
-            openidTokens:
-               description: Liste de tokens openid mappés à leurs endpoints (tokenIntrospectionEndpoint et userInfoEndpoint).
-               type: array
-               items:
-                  type: object
-                  $ref: '#/components/schemas/OpenidToken'
-      ConfSign:
-         type: object
-         required:
-         - idSignConf
-         - associatedProofId
-         - description
-         - signaturePackaging
-         - digestAlgorithm
-         - canonicalisationAlgorithm
-         - dn
-         properties:
-            idSignConf:
-               description: Identifiant de configuration. Cet identifiant est utilisé par les services de signature.
-               type: integer
-               format: int64
-            associatedProofId:
-               description: Identifiant de configuration de la preuve de validation associée.
-               type: integer
-               format: int64
-            description:
-               description: Description de la configuration de signature.
-               type: string
-            signaturePackaging:
-               type: string
-               enum: #
-               - ENVELOPING #WithComments
-               - ENVELOPED
-            digestAlgorithm:
-               type: string
-               enum:
-               - SHA1
-               - SHA256
-               - SHA512
-            canonicalisationAlgorithm:
-               type: string
-               enum:
-               - http://www.w3.org/TR/2001/REC-xml-c14n-20010315
-               - http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments
-               - http://www.w3.org/2001/10/xml-exc-c14n#
-               - http://www.w3.org/2001/10/xml-exc-c14n#WithComments
-            dn:
-               description: DN du certificat qui sera utilisé pour signer le document #WithComments
-               type: string
-      ConfVerifSign:
-         type: object
-         required:
-         - idVerifSignConf
-         - description
-         - rules
-         - metaData
-         properties:
-            idVerifSignConf:
-               description: Identifiant de configuration. Cet identifiant est utilisé par le service de vérification de signature.
-               type: integer
-               format: int64
-            description:
-               description: Description de la configuration de vérification de signature.
-               type: string
-            rules:
-               description: Liste des règles qui seront utilisées pour vérifier la signature.
-               type: array
-               items:
-                  type: object
-                  $ref: '#/components/schemas/Rule'
-                  example:
-                  -  rule: null
-                     id: SignatureCertificatValide
-                     description: Vérification de la validité de la signature du certificat.
-                  -  rule: null
-                     id: ExistenceBaliseSigningTime
-#                    - rule:
-#                      id: FormatSignature
-#                      description: Le format de la signature est valide.
-                     description: La balise "SigningTime" existe dans la signature.
-                  -  rule: null
-                     id: ExistenceDuCertificatDeSignature
-                     description: Le certificat utilisé pour la signature existe dans le signature.
-                  -  rule: null
-                     id: ExpirationCertificat
-                     description: Le certificat de signature n'est pas expiré.
-                  -  rule: null
-                     id: NonRepudiation
-                     description: L'usage de la clé du certificat correspond à un usage de signature électronique et de non
-                        répudiation.
-                  -  rule: null
-                     id: RevocationCertificat
-                     description: Le certificat de signature n'est pas révoqué.
-                  -  rule: null
-                     id: SignatureNonVide
-                     description: La signature existe et elle n'est pas vide.
-                  -  rule: null
-                     id: TrustedCertificat
-                     description: L'Autorité de Certification est reconnue.
-                  -  rule: null
-                     id: ValidationSignature
-                     description: Le contenu de la signature est valide.
-            metaData:
-               type: array
-               description: Données complémentaires et paramétrables retournées par le service.
-               items:
-                  type: string
-                  example:
-                  - DATE_SIGNATURE
-                  - DN_CERTIFICAT
-                  - RAPPORT_DIAGNOSTIQUE
-                  - DOCUMENT_ORIGINAL_NON_SIGNE
-      ConfProof:
-         type: object
-         required:
-         - idProofConf
-         - description
-         - signaturePackagingForProof
-         - digestAlgorithmForProof
-         - canonicalisationAlgorithmForProof
-         - dn
-         properties:
-            idProofConf:
-               description: Identifiant de configuration. Cet identifiant est utilisé par le service de génération de preuve.
-               type: integer
-               format: int64
-            description:
-               description: Description de la configuration de la génération de la preuve.
-               type: string #WithComments
-            signaturePackagingForProof:
-               type: string
-               enum: #
-               - ENVELOPING #WithComments
-               - ENVELOPED
-            digestAlgorithmForProof: #WithComments
-               type: string #
-               enum: #WithComments
-               - SHA1
-               - SHA256
-               - SHA512
-            canonicalisationAlgorithmForProof:
-               type: string
-               enum:
-               - http://www.w3.org/TR/2001/REC-xml-c14n-20010315 #WithComments
-               - http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments
-               - http://www.w3.org/2001/10/xml-exc-c14n#
-               - http://www.w3.org/2001/10/xml-exc-c14n#WithComments
-            dn:
-               description: DN du certificat qui sera utilisé pour signer la preuve. #WithComments
-               type: string #
-      ConfVerifCert: #WithComments
-         type: object
-         required:
-         - idVerifCertConf
-         - description
-         - rules
-         properties:
-            idVerifCertConf:
-               description: Identifiant de configuration. Cet identifiant est utilisé par le services de vérification de certificat.
-               type: integer
-               format: int64
-            description:
-               description: Description de la configuration de vérification des certificats.
-               type: string
-            rules:
-               type: array
-               items:
-                  type: object
-                  $ref: '#/components/schemas/Rule'
-                  example:
-                  -  rule: null
-                     id: ExpirationCertificat
-                     description: Le certificat n'est pas expiré.
-                  -  rule: null
-                     id: RevocationCertificat
-                     description: Le certificat n'est pas révoqué.
-                  -  rule: null
-                     id: SignatureCertificatValide
-                     description: Vérification de la validité de la signature du certificat.
-                  -  rule: null
-                     id: TrustedCertificat
-                     description: L'Autorité de Certification est reconnue.
-            metaData:
-               type: array
-               description: Données complémentaires et paramétrables retournées par le service.
-               items:
-                  type: string
-                  example:
-                  - DN_CERTIFICAT
-                  - RAPPORT_DIAGNOSTIQUE
-      Rule:
-         type: object
-         required:
-         - id
-         - description
-         properties:
-            id:
-               type: string
-            description:
-               type: string
-      OpenidToken:
-         type: object
-         required:
-         - tokenValue
-         - tokenIntrospectionEndpoint
-         - userInfoEndpoint
-         properties:
-            tokenValue:
-               type: string
-            tokenIntrospectionEndpoint:
-               type: string
-            userInfoEndpoint:
-               type: string
-      ESignSanteSignatureReport:
-         type: object
-         required:
-         - erreurs
-         - docSigne
-         properties:
-            erreurs:
-               type: array
-               items:
-                  $ref: '#/components/schemas/Erreur'
-            docSigne:
-               description: Le document signé encodé en base 64.
-               type: string
-      ESignSanteSignatureReportWithProof:
-         type: object
-         required:
-         - erreurs
-         - metaData
-         - valide
-         - docSigne
-         - preuve
-         properties:
-            erreurs:
-               type: array
-               items:
-                  $ref: '#/components/schemas/Erreur'
-            metaData:
-               type: array
-               items:
-                  $ref: '#/components/schemas/Metadata'
-            valide:
-               type: boolean
-            docSigne:
-               description: Le document signé encodé en base 64.
-               type: string
-            preuve:
-               description: La preuve de vérification encodée en base 64.
-               type: string
-      ESignSanteValidationReport:
-         type: object
-         required:
-         - erreurs
-         - metaData
-         - valide
-         properties:
-            erreurs:
-               type: array
-               items:
-                  $ref: '#/components/schemas/Erreur'
-            metaData:
-               type: array
-               items:
-                  $ref: '#/components/schemas/Metadata'
-            valide:
-               type: boolean
-      ESignSanteValidationReportWithProof:
-         type: object
-         required:
-         - erreurs
-         - metaData
-         - valide
-         - preuve
-         properties:
-            erreurs:
-               type: array
-               items:
-                  $ref: '#/components/schemas/Erreur'
-            metaData:
-               type: array
-               items:
-                  $ref: '#/components/schemas/Metadata'
-            valide:
-               type: boolean
-            preuve:
-               description: La preuve de vérification encodée en base 64.
-               type: string
-      Erreur:
-         required:
-         - codeErreur
-         - message
-         properties:
-            codeErreur:
-               type: string
-            message:
-               type: string
-      Metadata:
-         description: Données complémentaires et paramétrables retournées par le service.
-         required:
-         - typeMetadata
-         - message
-         properties:
-            typeMetadata:
-               type: string
-            message:
-               type: string
+  schemas:
+    Secret:
+      type: object
+      required:
+        - plainSecret
+      properties:
+        plainSecret:
+          description: Le secret.
+          type: string
+    HashedSecret:
+      type: object
+      required:
+        - secureSecretHash
+      properties:
+        secureSecretHash:
+          description: Le Hash du secret.
+          type: string
+    Conf:
+      description: Listes des différentes configurations
+      properties:
+        signature:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConfSign'
+        signatureVerification:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConfVerifSign'
+        certificatVerification:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConfVerifCert'
+        proof:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConfProof'
+    SignDocument:
+      type: object
+      required:
+        - idSignConf
+        - file
+      properties:
+        secret:
+          description: Secret
+          type: string
+          pattern: '^[a-zA-Z_0-9\-]*$'
+        idSignConf:
+          description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour la signature (appel de l'opération "/configurations").
+          type: integer
+          format: int64
+        file:
+          description: Document à signer.
+          type: string
+          format: binary
+        signers:
+          type: array
+          description: 'Liste des signataires délégataires. L''IHM swagger ne gère qu''1 seul signer - pour gérer plusieurs signers, rajouter des paramètres à la requête CURL.<br>Exemple: curl -X POST [...] -F "signers=Dupont" -F "signers=Dupond"'
+          example: curl -X POST [...] -F "signers=Dupont" -F "signers=Dupond"
+          items:
+            type: string
+    SignDocumentDSig:
+      type: object
+      required:
+        - idSignConf
+        - file
+      properties:
+        secret:
+          description: Secret
+          type: string
+          pattern: '^[a-zA-Z_0-9\-]*$'
+        idSignConf:
+          description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour la signature (appel de l'opération "/configurations").
+          type: integer
+          format: int64
+        file:
+          description: Document à signer.
+          type: string
+          format: binary
+    SignDocumentWithProof:
+      type: object
+      properties:
+        secret:
+          description: Secret
+          type: string
+          pattern: '^[a-zA-Z_0-9\-]*$'
+        idSignConf:
+          description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour la signature (appel de l'opération "/configurations").
+          type: integer
+          format: int64
+        file:
+          description: Document à signer.
+          type: string
+          format: binary
+        signers:
+          type: array
+          description: 'Liste des signataires délégataires. L''IHM swagger ne gère qu''1 seul signer - pour gérer plusieurs signers, rajouter des paramètres à la requête CURL.<br>Exemple: curl -X POST [...] -F "signers=Dupont" -F "signers=Dupond"'
+          example: curl -X POST [...] -F "signers=Dupont" -F "signers=Dupond"
+          items:
+            type: string
+        idVerifSignConf:
+          description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour la vérification de signature (appel de l'opération "/configurations").
+          type: integer
+          format: int64
+        requestId:
+          description: Identifiant de la demande pour renseigner l'élément RequestId de la preuve.
+          type: string
+          pattern: '^[a-zA-Z_0-9\-]*$'
+        proofTag:
+          description: Tag utilisé pour renseigner l'élément Tag de la preuve.
+          type: string
+          pattern: '^[a-zA-Z_0-9\-]*$'
+        applicantId:
+          description: Identifiant du demandeur utilisé pour renseigner le champ applicantId de la preuve.
+          type: string
+          pattern: '^[a-zA-Z_0-9\-]*$'
+      required:
+        - idSignConf
+        - file
+        - idVerifSignConf
+        - requestId
+        - proofTag
+        - applicantId
+    SignDocumentDSigWithProof:
+      type: object
+      properties:
+        secret:
+          description: Secret
+          type: string
+          pattern: '^[a-zA-Z_0-9\-]*$'
+        idSignConf:
+          description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour la signature (appel de l'opération "/configurations").
+          type: integer
+          format: int64
+        file:
+          description: Document à signer.
+          type: string
+          format: binary
+        idVerifSignConf:
+          description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour la vérification de signature (appel de l'opération "/configurations").
+          type: integer
+          format: int64
+        requestId:
+          description: Identifiant de la demande pour renseigner l'élément RequestId de la preuve.
+          type: string
+          pattern: '^[a-zA-Z_0-9\-]*$'
+        proofTag:
+          description: Tag utilisé pour renseigner l'élément Tag de la preuve.
+          type: string
+          pattern: '^[a-zA-Z_0-9\-]*$'
+        applicantId:
+          description: Identifiant du demandeur utilisé pour renseigner le champ applicantId de la preuve.
+          type: string
+          pattern: '^[a-zA-Z_0-9\-]*$'
+      required:
+        - idSignConf
+        - file
+        - idVerifSignConf
+        - requestId
+        - proofTag
+        - applicantId
+    VerifCertDocument:
+      type: object
+      required:
+        - idVerifCertConf
+        - file
+      properties:
+        idVerifCertConf:
+          description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour la vérification de certificat (appel de l'opération "/configurations").
+          type: integer
+          format: int64
+        file:
+          description: Certificat à vérifier.
+          type: string
+          format: binary
+    VerifCertDocumentWithProof:
+      type: object
+      required:
+        - idVerifCertConf
+        - file
+        - requestId
+        - proofTag
+        - applicantId
+        - idProofConf
+      properties:
+        idVerifCertConf:
+          description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour la vérification de certificat (appel de l'opération "/configurations").
+          type: integer
+          format: int64
+        file:
+          description: Certificat à vérifier.
+          type: string
+          format: binary
+        requestId:
+          description: Identifiant de la demande pour renseigner l'élément RequestId de la preuve.
+          type: string
+          pattern: '^[a-zA-Z_0-9\-]*$'
+        proofTag:
+          description: Tag utilisé pour renseigner l'élément Tag de la preuve.
+          type: string
+          pattern: '^[a-zA-Z_0-9\-]*$'
+        applicantId:
+          description: Identifiant du demandeur utilisé pour renseigner le champ applicantId de la preuve.
+          type: string
+          pattern: '^[a-zA-Z_0-9\-]*$'
+        idProofConf:
+          description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour la génération de la preuve (appel de l'opération "/configurations").
+          type: integer
+          format: int64
+    VerifSignDocument:
+      type: object
+      required:
+        - idVerifSignConf
+        - file
+      properties:
+        idVerifSignConf:
+          description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour la vérification de signature (appel de l'opération "/configurations").
+          type: integer
+          format: int64
+        file:
+          description: Document à vérifier.
+          type: string
+          format: binary
+    VerifSignDocumentWithProof:
+      type: object
+      required:
+        - idVerifSignConf
+        - file
+        - requestId
+        - proofTag
+        - applicantId
+        - idProofConf
+      properties:
+        idVerifSignConf:
+          description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour la vérification de signature (appel de l'opération "/configurations").
+          type: integer
+          format: int64
+        file:
+          description: Document à vérifier.
+          type: string
+          format: binary
+        requestId:
+          description: Identifiant de la demande pour renseigner l'élément RequestId de la preuve.
+          type: string
+          pattern: '^[a-zA-Z_0-9\-]*$'
+        proofTag:
+          description: Tag utilisé pour renseigner l'élément Tag de la preuve.
+          type: string
+          pattern: '^[a-zA-Z_0-9\-]*$'
+        applicantId:
+          description: Identifiant du demandeur utilisé pour renseigner le champ applicantId de la preuve.
+          type: string
+          pattern: '^[a-zA-Z_0-9\-]*$'
+        idProofConf:
+          description: Identifiant de configuration à sélectionner parmi la liste des configurations disponibles pour la génération de la preuve (appel de l'opération "/configurations").
+          type: integer
+          format: int64
+    ConfSign:
+      type: object
+      required:
+        - idSignConf
+        - associatedProofId
+        - description
+        - signaturePackaging
+        - digestAlgorithm
+        - canonicalisationAlgorithm
+        - dn
+      properties:
+        idSignConf:
+          description: Identifiant de configuration. Cet identifiant est utilisé par les services de signature.
+          type: integer
+          format: int64
+        associatedProofId:
+          description: Identifiant de configuration de la preuve de validation associée.
+          type: integer
+          format: int64
+        description:
+          description: Description de la configuration de signature.
+          type: string
+        signaturePackaging:
+          type: string
+          enum:
+            - ENVELOPING
+            - ENVELOPED
+        digestAlgorithm:
+          type: string
+          enum:
+            - SHA1
+            - SHA256
+            - SHA512
+        canonicalisationAlgorithm:
+          type: string
+          enum:
+            - 'http://www.w3.org/TR/2001/REC-xml-c14n-20010315'
+            - 'http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments'
+            - 'http://www.w3.org/2001/10/xml-exc-c14n#'
+            - 'http://www.w3.org/2001/10/xml-exc-c14n#WithComments'
+        dn:
+          description: DN du certificat qui sera utilisé pour signer le document
+          type: string
+    ConfVerifSign:
+      type: object
+      required:
+        - idVerifSignConf
+        - description
+        - rules
+        - metaData
+      properties:
+        idVerifSignConf:
+          description: Identifiant de configuration. Cet identifiant est utilisé par le service de vérification de signature.
+          type: integer
+          format: int64
+        description:
+          description: Description de la configuration de vérification de signature.
+          type: string
+        rules:
+          description: Liste des règles qui seront utilisées pour vérifier la signature.
+          type: array
+          items:
+            $ref: '#/components/schemas/Rule'
+        metaData:
+          type: array
+          description: Données complémentaires et paramétrables retournées par le service.
+          items:
+            type: string
+    ConfProof:
+      type: object
+      required:
+        - idProofConf
+        - description
+        - signaturePackagingForProof
+        - digestAlgorithmForProof
+        - canonicalisationAlgorithmForProof
+        - dn
+      properties:
+        idProofConf:
+          description: Identifiant de configuration. Cet identifiant est utilisé par le service de génération de preuve.
+          type: integer
+          format: int64
+        description:
+          description: Description de la configuration de la génération de la preuve.
+          type: string
+        signaturePackagingForProof:
+          type: string
+          enum:
+            - ENVELOPING
+            - ENVELOPED
+        digestAlgorithmForProof:
+          type: string
+          enum:
+            - SHA1
+            - SHA256
+            - SHA512
+        canonicalisationAlgorithmForProof:
+          type: string
+          enum:
+            - 'http://www.w3.org/TR/2001/REC-xml-c14n-20010315'
+            - 'http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments'
+            - 'http://www.w3.org/2001/10/xml-exc-c14n#'
+            - 'http://www.w3.org/2001/10/xml-exc-c14n#WithComments'
+        dn:
+          description: DN du certificat qui sera utilisé pour signer la preuve.
+          type: string
+    ConfVerifCert:
+      type: object
+      required:
+        - idVerifCertConf
+        - description
+        - rules
+      properties:
+        idVerifCertConf:
+          description: Identifiant de configuration. Cet identifiant est utilisé par le services de vérification de certificat.
+          type: integer
+          format: int64
+        description:
+          description: Description de la configuration de vérification des certificats.
+          type: string
+        rules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Rule'
+        metaData:
+          type: array
+          description: Données complémentaires et paramétrables retournées par le service.
+          items:
+            type: string
+    Rule:
+      type: object
+      required:
+        - id
+        - description
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+    ESignSanteSignatureReport:
+      type: object
+      required:
+        - erreurs
+        - docSigne
+      properties:
+        erreurs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Erreur'
+        docSigne:
+          description: Le document signé encodé en base 64.
+          type: string
+    ESignSanteSignatureReportWithProof:
+      type: object
+      required:
+        - erreurs
+        - metaData
+        - valide
+        - docSigne
+        - preuve
+      properties:
+        erreurs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Erreur'
+        metaData:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metadata'
+        valide:
+          type: boolean
+        docSigne:
+          description: Le document signé encodé en base 64.
+          type: string
+        preuve:
+          description: La preuve de vérification encodée en base 64.
+          type: string
+    ESignSanteValidationReport:
+      type: object
+      required:
+        - erreurs
+        - metaData
+        - valide
+      properties:
+        erreurs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Erreur'
+        metaData:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metadata'
+        valide:
+          type: boolean
+    ESignSanteValidationReportWithProof:
+      type: object
+      required:
+        - erreurs
+        - metaData
+        - valide
+        - preuve
+      properties:
+        erreurs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Erreur'
+        metaData:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metadata'
+        valide:
+          type: boolean
+        preuve:
+          description: La preuve de vérification encodée en base 64.
+          type: string
+    Erreur:
+      required:
+        - codeErreur
+        - message
+      properties:
+        codeErreur:
+          type: string
+        message:
+          type: string
+    Metadata:
+      description: Données complémentaires et paramétrables retournées par le service.
+      required:
+        - typeMetadata
+        - message
+      properties:
+        typeMetadata:
+          type: string
+        message:
+          type: string
+    OpenidToken:
+      description: contient les informations du token et sa validation
+      required:
+        - accessToken
+        - introspectionResponse
+        - userInfo
+      properties:
+        accessToken:
+          type: string
+        introspectionResponse:
+          type: string
+        userInfo:
+          type: string
+  parameters:
+    OpenidTokens:
+      name: X-OpenidToken
+      description: 'Un openidToken doit être passé au format JSON encodé en base 64. Pour passer plusieurs tokens, il faut utiliser plusieurs paramètres de header. Attention aux simples et doubles guillemets lors du passage de paramètres JSON.<br>Exemple: curl -X POST [...] -H "accept: application/json" -H ''openidTokens: {"introspectionResponse":"xxx","userInfo":"xxxx","accessToken":"xxxxx"}'' -H ''openidTokens: {"introspectionResponse":"xxxxxx","userInfo":"xxxxxxx","accessToken":"xxxxxxxxx"}'' -H "Content-Type: multipart/form-data" [...]'
+      example: "curl -X POST [...] -H  \"accept: application/json\" -H 'openidTokens: {\"introspectionResponse\":\"xxx\",\"userInfo\":\"xxxx\",\"accessToken\":\"xxxxx\"}' -H 'openidTokens: {\"introspectionResponse\":\"xxxxxx\",\"userInfo\":\"xxxxxxx\",\"accessToken\":\"xxxxxxxxx\"}' -H \"Content-Type: multipart/form-data\" [...]"
+      in: header
+      schema:
+        type: array
+        items:
+          $ref: '#/components/schemas/OpenidToken'

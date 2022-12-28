@@ -8,7 +8,7 @@ servers:
          - '443'
          default: '443'
       basePath:
-         default: /
+         default: /esignsante/v1
 info:
   description: API du composant eSignSante. <br>Ce composant dit de "signature" mutualise et homogénéise la mise en oeuvre des besoins autour de la signature. <br>Il permet de signer des documents ainsi que de vérifier la validité d'une signature ou d'un certificat.    <br>
   version: 2.5.0.13
@@ -35,7 +35,7 @@ paths:
     get:
       summary: Liste des opérations disponibles.
       operationId: getOperations
-      description: Opération qui permet au client de lister les opérations offertes par le composant ANS Sign.               <br>
+      description: Opération qui permet au client de lister les opérations offertes par le composant eSignSante.               <br>
       responses:
         '200':
           description: Requête en succès.
@@ -58,7 +58,7 @@ paths:
         - client
   /secrets:
     post:
-      summary: Generation d'un Hash sécurisé à partir du secret
+      summary: Génération d'un Hash sécurisé à partir du secret
       operationId: generateSecureSecretHash
       description: |
         L'opération permet au client de générer un Hash à partir du secret.
@@ -636,7 +636,7 @@ components:
         - file
       properties:
         secret:
-          description: Secret
+          description: Secret à passer si la configuration de signature utilisée (paramètre idSignConf) est protégée par un secret
           type: string
           pattern: '^[a-zA-Z_0-9\-]*$'
         idSignConf:
@@ -650,7 +650,6 @@ components:
         signers:
           type: array
           description: 'Liste des signataires délégataires. L''IHM swagger ne gère qu''1 seul signer - pour gérer plusieurs signers, rajouter des paramètres à la requête CURL.<br>Exemple: curl -X POST [...] -F "signers=Dupont" -F "signers=Dupond"'
-          example: curl -X POST [...] -F "signers=Dupont" -F "signers=Dupond"
           items:
             type: string
     SignDocumentDSig:
@@ -660,7 +659,7 @@ components:
         - file
       properties:
         secret:
-          description: Secret
+          description: Secret à passer si la configuration de signature utilisée (paramètre idSignConf) est protégée par un secret
           type: string
           pattern: '^[a-zA-Z_0-9\-]*$'
         idSignConf:
@@ -675,7 +674,7 @@ components:
       type: object
       properties:
         secret:
-          description: Secret
+          description: Secret à passer si la configuration de signature utilisée (paramètre idSignConf) est protégée par un secret
           type: string
           pattern: '^[a-zA-Z_0-9\-]*$'
         idSignConf:
@@ -689,7 +688,6 @@ components:
         signers:
           type: array
           description: 'Liste des signataires délégataires. L''IHM swagger ne gère qu''1 seul signer - pour gérer plusieurs signers, rajouter des paramètres à la requête CURL.<br>Exemple: curl -X POST [...] -F "signers=Dupont" -F "signers=Dupond"'
-          example: curl -X POST [...] -F "signers=Dupont" -F "signers=Dupond"
           items:
             type: string
         idVerifSignConf:
@@ -719,7 +717,7 @@ components:
       type: object
       properties:
         secret:
-          description: Secret
+          description: Secret à passer si la configuration de signature utilisée (paramètre idSignConf) est protégée par un secret
           type: string
           pattern: '^[a-zA-Z_0-9\-]*$'
         idSignConf:
@@ -1099,8 +1097,7 @@ components:
   parameters:
     OpenidTokens:
       name: X-OpenidToken
-      description: 'Un openidToken doit être passé au format JSON encodé en base 64. Pour passer plusieurs tokens, il faut utiliser plusieurs paramètres de header. Attention aux simples et doubles guillemets lors du passage de paramètres JSON.<br>Exemple: curl -X POST [...] -H "accept: application/json" -H ''openidTokens: {"introspectionResponse":"xxx","userInfo":"xxxx","accessToken":"xxxxx"}'' -H ''openidTokens: {"introspectionResponse":"xxxxxx","userInfo":"xxxxxxx","accessToken":"xxxxxxxxx"}'' -H "Content-Type: multipart/form-data" [...]'
-      example: "curl -X POST [...] -H  \"accept: application/json\" -H 'openidTokens: {\"introspectionResponse\":\"xxx\",\"userInfo\":\"xxxx\",\"accessToken\":\"xxxxx\"}' -H 'openidTokens: {\"introspectionResponse\":\"xxxxxx\",\"userInfo\":\"xxxxxxx\",\"accessToken\":\"xxxxxxxxx\"}' -H \"Content-Type: multipart/form-data\" [...]"
+      description: 'Un openidToken peut être passé (NON OBLIGATOIRE), au format JSON encodé en base 64. Pour passer plusieurs tokens, il faut utiliser plusieurs paramètres de header. Attention aux simples et doubles guillemets lors du passage de paramètres JSON.<br>Exemple: curl -X POST [...] -H "accept: application/json" -H ''openidTokens: {"introspectionResponse":"xxx","userInfo":"xxxx","accessToken":"xxxxx"}'' -H ''openidTokens: {"introspectionResponse":"xxxxxx","userInfo":"xxxxxxx","accessToken":"xxxxxxxxx"}'' -H "Content-Type: multipart/form-data" [...]'
       in: header
       schema:
         type: array

@@ -218,7 +218,7 @@ A partir du TAR
 docker load --input [path-to]image.tar
 ```
 Via docker pull
-docker pull docker.pkg.github.com/ansforge/esignsante/esignsante:2.4.0.3-release
+docker pull ghcr.io/ansforge/esignsante/esignsante:2.5.0.13
 
 `docker images ls` pour vérifier que l'image est bien chargée.
 
@@ -239,7 +239,7 @@ config.crl.scheduling=0 0 3 * * ?
 
 Pour démarrer le conteneur il suffit de lancer :
 ```shell script
-docker run -v [path-to-conf-files-parent-dir]:/var/esignsante -p 8080:8080 -e JAVA_TOOL_OPTIONS="-Xms1g -Xmx1g -Dspring.config.location=/var/esignsante/application.properties -Dspring.profiles.active=swagger -Dhttp.proxyHost=[http-proxy-ip] -Dhttps.proxyHost=[https-proxy-ip]  -Dhttp.proxyPort=[http-proxy-port] -Dhttps.proxyPort=[https-proxy-port]" -d [image-id] --ws.conf=var/esignsante/conf.json
+docker run -v [path-to-conf-files-parent-dir]:/var/esignsante -p 8080:8080 -e JAVA_TOOL_OPTIONS="-Xms1g -Xmx1g -Dspring.config.location=/var/esignsante/application.properties -Dspring.profiles.active=swagger -Dhttp.proxyHost=[http-proxy-ip] -Dhttps.proxyHost=[https-proxy-ip]  -Dhttp.proxyPort=[http-proxy-port] -Dhttps.proxyPort=[https-proxy-port]" -d [image-id] --ws.conf=var/esignsante/config.json
 ```
 Options docker:
 * -v : Se compose de deux champs dans notre cas, séparés par des deux points (:).

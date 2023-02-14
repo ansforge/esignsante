@@ -158,7 +158,7 @@ L'objet configuration de validation de certificat contient les éléments suivan
 Voici un exemple :
 ```json
 {
-	"idVerifSign": "1",
+	"idVerifCert": "1",
 	"description": "",
 	"metadata": "DN_CERTIFICAT,RAPPORT_DIAGNOSTIQUE,RAPPORT_DSS",
 	"rules": "ExpirationCertificat,RevocationCertificat,SignatureCertificatValide,TrustedCertificat"

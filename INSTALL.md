@@ -199,6 +199,10 @@ Note : pour trouver l'url des CRLs associées à un certificat il suffit de cons
 
 ### Commandes OpenSSL
 
+Pour extraire le certificat (clé publique) d'un fichier p12 la commande est la suivante:
+```
+openssl pkcs12 -nokeys -in <votre fichier p12> -out <fichier de sortie>
+```
 Pour extraire la clé privée d’un fichier p12, sans mot de passe et au format PKCS#8, la commande openssl est la suivante :
 ```
 openssl pkcs12 -in <votre fichier p12> -nocerts -nodes -out <fichier de sortie>
@@ -208,6 +212,7 @@ Pour passer un fichier d'une clée privée, d'un format PKCS#1 vers un format PK
 ```
 openssl pkey -in <fichier de clé pem en PKCS#1> -out <fichier de clé de sortie pem en PKCS#8>
 ```
+
 
 
 ## Installation de l'Image Docker
